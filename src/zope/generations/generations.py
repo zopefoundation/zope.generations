@@ -179,8 +179,8 @@ def findManagers():
 
 def PersistentDict():
     # Another hook to let Chris use this for Zope 2
-    import persistent.dict
-    return persistent.dict.PersistentDict()
+    import persistent.mapping
+    return persistent.mapping.PersistentMapping()
 
 
 EVOLVE, EVOLVENOT, EVOLVEMINIMUM = 'EVOLVE', 'EVOLVENOT', 'EVOLVEMINIMUM'
