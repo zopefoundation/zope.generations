@@ -11,16 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Experimental support for application database generations
-
-$Id$
-"""
+"""Support for application database generations."""
 __docformat__ = 'restructuredtext'
 
 import logging
-
 import transaction
-
 import zope.component
 import zope.interface
 

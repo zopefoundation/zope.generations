@@ -11,7 +11,4 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Experimental support for application database generations
-
-$Id$
-"""
+"""Support for application database generations."""

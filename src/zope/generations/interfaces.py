@@ -11,10 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Interfaces for experimental support for application database generations
-
-$Id$
-"""
+"""Interfaces for support for application database generations."""
 __docformat__ = 'restructuredtext'
 
 import zope.interface
@@ -63,7 +60,7 @@ class ISchemaManager(zope.interface.Interface):
         transaction will be committed by the caller if there is no
         error.  It is acceptable to commit a transaction if there are no
         subsequent operations.  The method may create savepoints.
-        
+
         """
 
     def getInfo(generation):
@@ -87,5 +84,5 @@ class IInstallableSchemaManager(ISchemaManager):
         transaction will be committed by the caller if there is no
         error.  It is acceptable to commit a transaction if there are no
         subsequent operations.  The method may create savepoints.
-        
+
         """
