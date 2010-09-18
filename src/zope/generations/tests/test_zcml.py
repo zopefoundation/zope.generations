@@ -24,6 +24,9 @@ class ZCMLTests(unittest.TestCase):
         # N.B.:  this test deliberately avoids any "ftesting" / layers
         #        support:  its purpose is to ensure that the package's
         #        ZCML file is loadable *without* loading any other ZCML.
-        from zope.configuration.xmlconfig import file
+        import zope.configuration.xmlconfig
         import zope.generations
-        return file('configure.zcml', package=zope.generations)
+        zope.configuration.xmlconfig.file(
+            'configure.zcml', package=zope.generations)
+        zope.configuration.xmlconfig.file(
+            'subscriber.zcml', package=zope.generations)
