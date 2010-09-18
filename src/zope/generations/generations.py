@@ -28,9 +28,9 @@ from interfaces import GenerationTooHigh, GenerationTooLow, UnableToEvolve
 from interfaces import ISchemaManager, IInstallableSchemaManager
 
 
-logger = logging.getLogger('zope.app.generations')
-generations_key = 'zope.app.generations'
-
+logger = logging.getLogger('zope.generations')
+old_generations_key = 'zope.app.generations'
+generations_key = 'zope.generations'
 
 class SchemaManager(object):
     """Schema manager
@@ -48,7 +48,7 @@ class SchemaManager(object):
 
        So, if we'll create a SchemaManager:
 
-         >>> manager = SchemaManager(1, 3, 'zope.app.generations.demo')
+         >>> manager = SchemaManager(1, 3, 'zope.generations.demo')
 
        and we'll create a test database and context:
 
@@ -59,13 +59,14 @@ class SchemaManager(object):
 
        Then we'll evolve the database from generation 1 to 3:
 
+         >>> import transaction
          >>> manager.evolve(context, 2)
          >>> manager.evolve(context, 3)
          >>> transaction.commit()
 
        The demo evolvers simply record their data in a root key:
 
-         >>> from zope.app.generations.demo import key
+         >>> from zope.generations.demo import key
          >>> conn = db.open()
          >>> conn.root()[key]
          (2, 3)
@@ -98,12 +99,12 @@ class SchemaManager(object):
        If there is not install script, the manager will do nothing on
        an install:
 
-         >>> manager = SchemaManager(1, 3, 'zope.app.generations.demo2')
+         >>> manager = SchemaManager(1, 3, 'zope.generations.demo2')
          >>> manager.install(context)
 
        We handle ImportErrors within the script specially, so they get promoted:
 
-         >>> manager = SchemaManager(1, 3, 'zope.app.generations.demo3')
+         >>> manager = SchemaManager(1, 3, 'zope.generations.demo3')
          >>> manager.install(context)
          Traceback (most recent call last):
          ImportError: No module named nonexistingmodule
@@ -191,7 +192,7 @@ def evolve(db, how=EVOLVE):
     We evolve a database using registered application schema managers.
     Here's an example (silly) schema manager:
 
-      >>> from zope.app.generations.interfaces import ISchemaManager
+      >>> from zope.generations.interfaces import ISchemaManager
       >>> class FauxApp(object):
       ...     zope.interface.implements(ISchemaManager)
       ...
@@ -211,7 +212,7 @@ def evolve(db, how=EVOLVE):
     logging handler:
 
       >>> from zope.testing import loggingsupport
-      >>> loghandler = loggingsupport.InstalledHandler('zope.app.generations')
+      >>> loghandler = loggingsupport.InstalledHandler('zope.generations')
       >>> def print_log():
       ...    print loghandler
       ...    loghandler.clear()
@@ -219,16 +220,16 @@ def evolve(db, how=EVOLVE):
     We also need to set up the component system, since we'll be
     registering utilities:
 
-      >>> from zope.app.testing.placelesssetup import setUp, tearDown
+      >>> from zope.component.testing import setUp, tearDown
       >>> setUp()
 
     Now, we'll create and register some handlers:
 
-      >>> from zope.app.testing import ztapi
+      >>> import zope.component
       >>> app1 = FauxApp('app1', 0, 1)
-      >>> ztapi.provideUtility(ISchemaManager, app1, name='app1')
+      >>> zope.component.provideUtility(app1, ISchemaManager, name='app1')
       >>> app2 = FauxApp('app2', 5, 11)
-      >>> ztapi.provideUtility(ISchemaManager, app2, name='app2')
+      >>> zope.component.provideUtility(app2, ISchemaManager, name='app2')
 
     If we create a new database, and evolve it, we'll simply update
     the generation data:
@@ -245,7 +246,7 @@ def evolve(db, how=EVOLVE):
       11
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVE
 
     But nothing will have been done to the database:
@@ -259,13 +260,13 @@ def evolve(db, how=EVOLVE):
       >>> evolve(db)
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVE
-      zope.app.generations INFO
+      zope.generations INFO
         testdb/app1: currently at generation 1, targetting generation 2
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app1: evolving to generation 2
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app2: up-to-date at generation 11
 
     We'll see that the generation data has updated:
@@ -291,17 +292,17 @@ def evolve(db, how=EVOLVE):
       >>> evolve(db)
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVE
-      zope.app.generations INFO
+      zope.generations INFO
         testdb/app1: currently at generation 2, targetting generation 7
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app1: evolving to generation 3
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app1: evolving to generation 4
-      zope.app.generations ERROR
+      zope.generations ERROR
         testdb/app1: failed to evolve to generation 4
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app2: up-to-date at generation 11
 
     The database will have been updated for previous generations:
@@ -327,13 +328,13 @@ def evolve(db, how=EVOLVE):
     We'll also get a log entry:
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVE
-      zope.app.generations INFO
+      zope.generations INFO
         testdb/app1: currently at generation 3, targetting generation 7
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app1: evolving to generation 4
-      zope.app.generations ERROR
+      zope.generations ERROR
         testdb/app1: failed to evolve to generation 4
 
     So far, we've used evolve in its default policy, in which we evolve
@@ -358,9 +359,9 @@ def evolve(db, how=EVOLVE):
       GenerationTooLow: (3, u'app1', 4)
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVENOT
-      zope.app.generations ERROR
+      zope.generations ERROR
         testdb/app1: current generation too low (3 < 4) but mode is EVOLVENOT
 
     We got an error because we aren't at the minimum generation for
@@ -384,13 +385,13 @@ def evolve(db, how=EVOLVE):
       4
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVEMINIMUM
-      zope.app.generations INFO
+      zope.generations INFO
         testdb/app1: currently at generation 3, targetting generation 4
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app1: evolving to generation 4
-      zope.app.generations DEBUG
+      zope.generations DEBUG
         testdb/app2: up-to-date at generation 11
 
     If we happen to install an app that has a generation that is less
@@ -406,9 +407,9 @@ def evolve(db, how=EVOLVE):
       GenerationTooHigh: (4, u'app1', 2)
 
       >>> print_log()
-      zope.app.generations INFO
+      zope.generations INFO
         testdb: evolving in mode EVOLVE
-      zope.app.generations ERROR
+      zope.generations ERROR
         testdb/app1: current generation too high (4 > 2)
 
     We'd better clean up:
@@ -427,7 +428,7 @@ def evolve(db, how=EVOLVE):
         context = Context()
         context.connection = conn
         root = conn.root()
-        generations = root.get(generations_key)
+        generations = root.get(generations_key) #, root.get(old_generations_key))
         if generations is None:
             generations = root[generations_key] = PersistentDict()
             transaction.commit()

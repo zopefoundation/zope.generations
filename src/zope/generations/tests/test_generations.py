@@ -11,18 +11,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Schema-generation tests
+"""Schema-generation tests."""
 
-$Id$
-"""
-
-from zope.app.testing import placelesssetup
+import zope.component.testing
 import doctest
 import unittest
 
 
 def tearDownREADME(test):
-    placelesssetup.tearDown(test)
+    zope.component.testing.tearDown(test)
     test.globs['db'].close()
 
 
@@ -30,8 +27,10 @@ def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite(
             'README.txt',
-            setUp=placelesssetup.setUp, tearDown=tearDownREADME,
+            setUp=zope.component.testing.setUp,
+            tearDown=tearDownREADME,
+            package='zope.generations',
             ),
-        doctest.DocTestSuite('zope.app.generations.generations'),
-        doctest.DocTestSuite('zope.app.generations.utility'),
+        doctest.DocTestSuite('zope.generations.generations'),
+        doctest.DocTestSuite('zope.generations.utility'),
         ))

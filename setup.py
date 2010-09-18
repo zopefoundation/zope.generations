@@ -16,7 +16,7 @@
 # When developing and releasing this package, please follow the documented
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
-"""Setup for zope.app.generations package
+"""Setup for zope.generations package
 
 $Id$
 """
@@ -26,11 +26,11 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
-setup(name='zope.app.generations',
-      version='3.6.1dev',
+setup(name='zope.generations',
+      version='3.7.0dev',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
-      description='Zope Application Schema Generations',
+      description='Zope application schema generations',
       long_description=(
           read('README.txt')
           + '\n\n.. contents::\n\n' +
@@ -38,11 +38,11 @@ setup(name='zope.app.generations',
           'Detailed Documentation\n'
           '======================\n'
           + '\n\n' +
-          read('src', 'zope', 'app', 'generations', 'README.txt')
+          read('src', 'zope', 'generations', 'README.txt')
           + '\n\n' +
           read('CHANGES.txt')
           ),
-      keywords = "zope3 zodb schema generation",
+      keywords = "zope zodb schema generation",
       classifiers = [
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
@@ -53,26 +53,24 @@ setup(name='zope.app.generations',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
           'Framework :: Zope3'],
-      url='http://pypi.python.org/pypi/zope.app.generations',
+      url='http://pypi.python.org/pypi/zope.generations',
       license='ZPL 2.1',
       packages=find_packages('src'),
       package_dir = {'': 'src'},
-      namespace_packages=['zope', 'zope.app'],
+      namespace_packages=['zope'],
       extras_require = dict(test=[
-          'zope.app.testing',
-          'zope.app.zcmlfiles',
-          'zope.login',
-          'zope.publisher >= 3.12',
-          'zope.securitypolicy',
+          'ZODB3',
+          'zope.app.publication',
+          'zope.site',
+          'zope.testing',
           ]),
-      install_requires=['setuptools',
-                        'zope.app.renderer',
-                        'zope.interface',
-                        'zope.app.publication',
-                        'ZODB3',
-                        'zope.processlifetime',
-                        'zope.applicationcontrol',
-                        ],
+      install_requires=[
+          'setuptools',
+          'transaction',
+          'zope.component',
+          'zope.interface',
+          'zope.processlifetime',
+          ],
       include_package_data = True,
       zip_safe = False,
       )

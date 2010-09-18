@@ -19,7 +19,7 @@ __docformat__ = 'restructuredtext'
 
 generation = 3
 
-import zope.app.generations.demo
+import zope.generations.demo
 
 import zope.nonexistingmodule
 

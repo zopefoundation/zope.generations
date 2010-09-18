@@ -15,7 +15,6 @@ connection:
     >>> import cgi
     >>> from pprint import pprint
     >>> from zope.interface import implements
-    >>> from zope.app.testing import ztapi
 
     >>> from ZODB.tests.util import DB
     >>> db = DB()
@@ -46,8 +45,10 @@ will be just fine, since we don't want it to do anything just yet.
 
     >>> from zope.generations.interfaces import ISchemaManager
     >>> from zope.generations.generations import SchemaManager
+    >>> import zope.component
     >>> dummy_manager = SchemaManager(minimum_generation=0, generation=0)
-    >>> ztapi.provideUtility(ISchemaManager, dummy_manager, name='some.app')
+    >>> zope.component.provideUtility(
+    ...     dummy_manager, ISchemaManager, name='some.app')
 
 'some.app' is a unique identifier.  You should use a URI or the dotted name
 of your package.
@@ -88,7 +89,10 @@ our peers.
 Let's update the schema manager (drop the old one and install a new custom
 one):
 
-    >>> ztapi.unprovideUtility(ISchemaManager, name='some.app')
+    >>> from zope.component import globalregistry
+    >>> gsm = globalregistry.getGlobalSiteManager()
+    >>> gsm.unregisterUtility(provided=ISchemaManager, name='some.app')
+    True
 
     >>> class MySchemaManager(object):
     ...     implements(ISchemaManager)
@@ -112,7 +116,7 @@ one):
     ...         transaction.commit()
 
     >>> manager = MySchemaManager()
-    >>> ztapi.provideUtility(ISchemaManager, manager, name='some.app')
+    >>> zope.component.provideUtility(manager, ISchemaManager, name='some.app')
 
 We have set `minimum_generation` to 1.  That means that our application
 will refuse to run with a database older than generation 1.  The `generation`
@@ -201,10 +205,10 @@ determined by sorting their names.
     >>> manager1 = SchemaManager(minimum_generation=0, generation=0)
     >>> manager2 = SchemaManager(minimum_generation=0, generation=0)
 
-    >>> ztapi.provideUtility(
-    ...     ISchemaManager, manager1, name='another.app')
-    >>> ztapi.provideUtility(
-    ...     ISchemaManager, manager2, name='another.app-extension')
+    >>> zope.component.provideUtility(
+    ...     manager1, ISchemaManager, name='another.app')
+    >>> zope.component.provideUtility(
+    ...     manager2, ISchemaManager, name='another.app-extension')
 
 Notice how the name of the first package is used to create a namespace
 for dependent packages.  This is not a requirement of the framework,
@@ -226,8 +230,11 @@ depends on generation 1 of 'another.app'.  We'll need to provide
 schema managers for each that record that they've been run so we can
 verify the result:
 
-    >>> ztapi.unprovideUtility(ISchemaManager, name='another.app')
-    >>> ztapi.unprovideUtility(ISchemaManager, name='another.app-extension')
+    >>> gsm.unregisterUtility(provided=ISchemaManager, name='another.app')
+    True
+    >>> gsm.unregisterUtility(
+    ...     provided=ISchemaManager, name='another.app-extension')
+    True
 
     >>> class FoundationSchemaManager(object):
     ...     implements(ISchemaManager)
@@ -266,10 +273,10 @@ verify the result:
     >>> manager1 = FoundationSchemaManager()
     >>> manager2 = DependentSchemaManager()
 
-    >>> ztapi.provideUtility(
-    ...     ISchemaManager, manager1, name='another.app')
-    >>> ztapi.provideUtility(
-    ...     ISchemaManager, manager2, name='another.app-extension')
+    >>> zope.component.provideUtility(
+    ...     manager1, ISchemaManager, name='another.app')
+    >>> zope.component.provideUtility(
+    ...     manager2, ISchemaManager, name='another.app-extension')
 
 Evolving the database now will always run the 'another.app' evolver
 before the 'another.app-extension' evolver:
@@ -297,8 +304,8 @@ is a better alternative than registering database-opened subscribers.
 Let's define a new schema manager that includes installation:
 
 
-    >>> ztapi.unprovideUtility(ISchemaManager, name='some.app')
-
+    >>> gsm.unregisterUtility(provided=ISchemaManager, name='some.app')
+    True
     >>> from zope.generations.interfaces import IInstallableSchemaManager
     >>> class MySchemaManager(object):
     ...     implements(IInstallableSchemaManager)
@@ -329,7 +336,7 @@ Let's define a new schema manager that includes installation:
     ...         transaction.commit()
 
     >>> manager = MySchemaManager()
-    >>> ztapi.provideUtility(ISchemaManager, manager, name='some.app')
+    >>> zope.component.provideUtility(manager, ISchemaManager, name='some.app')
 
 Now, lets open a new database:
 

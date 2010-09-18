@@ -19,8 +19,8 @@ __docformat__ = 'restructuredtext'
 
 generation = 2
 
-import zope.app.generations.demo
+import zope.generations.demo
 
 def evolve(context):
     """Evolver 2"""
-    zope.app.generations.demo.evolve(context, generation)
+    zope.generations.demo.evolve(context, generation)

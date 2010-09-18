@@ -13,5 +13,5 @@
 ##############################################################################
 """Demo package for evolution scripts (3)"""
 
-key = 'zope.app.generations.demo-generation'
+key = 'zope.generations.demo-generation'
 

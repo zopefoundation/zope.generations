@@ -17,8 +17,6 @@ $Id$
 """
 __docformat__ = "reStructuredText"
 
-import zope.app.publication.zopepublication
-
 
 def findObjectsMatching(root, condition):
     """Find all objects in the root that match the condition.
@@ -128,37 +126,41 @@ def findObjectsProviding(root, interface):
     for match in findObjectsMatching(root, interface.providedBy):
         yield match
 
+try:
+    import zope.app.publication.zopepublication
+except:
+    pass
+else:
+    def getRootFolder(context):
+        """Get the root folder of the ZODB.
 
-def getRootFolder(context):
-    """Get the root folder of the ZODB.
+        We need some set up. Create a database:
 
-    We need some set up. Create a database:
+        >>> from ZODB.tests.util import DB
+        >>> from zope.generations.generations import Context
+        >>> db = DB()
+        >>> context = Context()
+        >>> context.connection = db.open()
+        >>> root = context.connection.root()
 
-    >>> from ZODB.tests.util import DB
-    >>> from zope.app.generations.generations import Context
-    >>> db = DB()
-    >>> context = Context()
-    >>> context.connection = db.open()
-    >>> root = context.connection.root()
+        Add a root folder:
 
-    Add a root folder:
+        >>> from zope.site.folder import rootFolder
+        >>> from zope.app.publication.zopepublication import ZopePublication
+        >>> import transaction
+        >>> root[ZopePublication.root_name] = rootFolder()
+        >>> transaction.commit()
 
-    >>> from zope.site.folder import rootFolder
-    >>> from zope.app.publication.zopepublication import ZopePublication
-    >>> import transaction
-    >>> root[ZopePublication.root_name] = rootFolder()
-    >>> transaction.commit()
+        Now we can get the root folder using the function:
 
-    Now we can get the root folder using the function:
+        >>> getRootFolder(context) # doctest: +ELLIPSIS
+        <zope.site.folder.Folder object at ...>
 
-    >>> getRootFolder(context) # doctest: +ELLIPSIS
-    <zope.site.folder.Folder object at ...>
+        We'd better clean up:
 
-    We'd better clean up:
+        >>> context.connection.close()
+        >>> db.close()
 
-    >>> context.connection.close()
-    >>> db.close()
-
-    """
-    return context.connection.root().get(
-        zope.app.publication.zopepublication.ZopePublication.root_name, None)
+        """
+        return context.connection.root().get(
+            zope.app.publication.zopepublication.ZopePublication.root_name, None)
