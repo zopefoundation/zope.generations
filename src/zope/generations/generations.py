@@ -428,10 +428,17 @@ def evolve(db, how=EVOLVE):
         context = Context()
         context.connection = conn
         root = conn.root()
-        generations = root.get(generations_key) #, root.get(old_generations_key))
+        generations = root.get(generations_key)
         if generations is None:
-            generations = root[generations_key] = PersistentDict()
+            # backward compatibility with zope.app.generations
+            generations = root.get(old_generations_key)
+            if generations is not None:
+                # switch over to new generations_key
+                root[generations_key] = generations
+            else:
+                generations = root[generations_key] = PersistentDict()
             transaction.commit()
+
 
         for key, manager in sorted(findManagers()):
             generation = generations.get(key)

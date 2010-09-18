@@ -6,3 +6,8 @@ CHANGES
 ------------------
 
 - Initial release extracted from `zope.app.generations`.
+
+- Generations key (stored in database root) has been changed from
+  ``zope.app.generations`` to ``zope.generations``.  Migration is done when
+  ``evolve`` is run the first time by coping the exisiting generations data
+  over to the new key. So the old and the new key can be used in parallel.
