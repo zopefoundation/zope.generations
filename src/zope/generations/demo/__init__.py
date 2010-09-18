@@ -14,13 +14,13 @@
 """Demo package for evolution scripts
 
 The evolution scripts in this package are pretty dumb. The just call
-the evolve function defined here with a generation number. 
+the evolve function defined here with a generation number.
 
 $Id$
 """
 __docformat__ = 'restructuredtext'
 
-key = 'zope.app.generations.demo-generation'
+key = 'zope.generations.demo-generation'
 
 def evolve(context, generation):
     """Demo that "evolves" a database.

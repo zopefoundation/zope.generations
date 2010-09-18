@@ -44,8 +44,8 @@ The default implementation of SchemaManager is not suitable for this test
 because it uses Python modules to manage generations.  For now, it
 will be just fine, since we don't want it to do anything just yet.
 
-    >>> from zope.app.generations.interfaces import ISchemaManager
-    >>> from zope.app.generations.generations import SchemaManager
+    >>> from zope.generations.interfaces import ISchemaManager
+    >>> from zope.generations.generations import SchemaManager
     >>> dummy_manager = SchemaManager(minimum_generation=0, generation=0)
     >>> ztapi.provideUtility(ISchemaManager, dummy_manager, name='some.app')
 
@@ -62,14 +62,14 @@ simulate this:
     ...         self.database = database
     >>> event = DatabaseOpenedEventStub(db)
 
-    >>> from zope.app.generations.generations import evolveMinimumSubscriber
+    >>> from zope.generations.generations import evolveMinimumSubscriber
     >>> evolveMinimumSubscriber(event)
 
 The consequence of this action is that now the database contains the fact
 that our current schema number is 0.  When we update the schema, Zope3 will
 have an idea of what the starting point was.  Here, see?
 
-    >>> from zope.app.generations.generations import generations_key
+    >>> from zope.generations.generations import generations_key
     >>> root[generations_key]['some.app']
     0
 
@@ -135,7 +135,7 @@ for organization of evolver functions.  See its docstring for more information.
 
 In real life you will have much more complex object structures than the one
 here.  To make your life easier, there are two very useful functions available
-in zope.app.generations.utility: findObjectsMatching() and
+in zope.generations.utility: findObjectsMatching() and
 findObjectsProviding().  They will dig through containers recursively to help
 you seek out old objects that you wish to update, by interface or by some other
 criteria.  They are easy to understand, check their docstrings.
@@ -168,7 +168,7 @@ to 1:
 We see that generations are working, so we decide to take the next step
 and evolve to generation 2.  Let's see how this can be done manually:
 
-    >>> from zope.app.generations.generations import evolve
+    >>> from zope.generations.generations import evolve
     >>> evolve(db)
 
     >>> pprint(root['answers'])
@@ -299,7 +299,7 @@ Let's define a new schema manager that includes installation:
 
     >>> ztapi.unprovideUtility(ISchemaManager, name='some.app')
 
-    >>> from zope.app.generations.interfaces import IInstallableSchemaManager
+    >>> from zope.generations.interfaces import IInstallableSchemaManager
     >>> class MySchemaManager(object):
     ...     implements(IInstallableSchemaManager)
     ...
