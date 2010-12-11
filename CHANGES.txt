@@ -5,7 +5,8 @@ CHANGES
 3.7.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Removed buildout part which was used during development but does not
+  compile on Windows.
 
 
 3.7.0 (2010-09-18)
