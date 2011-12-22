@@ -8,6 +8,8 @@ CHANGES
 - Removed buildout part which was used during development but does not
   compile on Windows.
 
+- Generation scripts add a transaction note.
+
 
 3.7.0 (2010-09-18)
 ------------------

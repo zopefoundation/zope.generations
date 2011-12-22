@@ -278,6 +278,11 @@ def evolve(db, how=EVOLVE):
       2
       >>> root.get('app2')
 
+    And that the transaction record got a note
+
+      >>> [it.description for it in conn.db().storage.iterator()][-1]
+      u'app1: evolving to generation 2'
+
     If there is an error updating a particular generation, but the
     generation is greater than the minimum generation, then we won't
     get an error from evolve, but we will get a log message.
@@ -448,6 +453,8 @@ def evolve(db, how=EVOLVE):
 
                 if IInstallableSchemaManager.providedBy(manager):
                     try:
+                        transaction.get().note('%s: running install generation'
+                                               % key)
                         logger.info("%s/%s: running install generation",
                                     db_name, key)
                         manager.install(context)
@@ -491,7 +498,8 @@ def evolve(db, how=EVOLVE):
             while generation < target:
                 generation += 1
                 try:
-                    transaction.begin()
+                    transaction.begin().note('%s: evolving to generation %d'
+                                             % (key, generation))
                     logger.debug('%s/%s: evolving to generation %d',
                                  db_name, key, generation)
                     manager.evolve(context, generation)

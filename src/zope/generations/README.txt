@@ -359,3 +359,12 @@ Now, lets open a new database:
      'four &lt; ?': 'four &lt; five'}
     >>> root[generations_key]['some.app']
     2
+
+The ZODB transaction log notes that our install script was executed
+
+    >>> [it.description for it in conn.db().storage.iterator()][-2]
+    u'some.app: running install generation'
+
+(Minor note: it's not the last record because there are two commits:
+MySchemaManager performs one, and evolveMinimumSubscriber performs
+the second one.  MySchemaManager doesn't really need to commit.)
