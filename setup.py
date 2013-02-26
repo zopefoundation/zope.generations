@@ -17,8 +17,6 @@
 # Zope Toolkit policies as described by this documentation.
 ##############################################################################
 """Setup for zope.generations package
-
-$Id$
 """
 import os
 from setuptools import setup, find_packages
@@ -26,8 +24,23 @@ from setuptools import setup, find_packages
 def read(*rnames):
     return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
 
+def alltests():
+    import os
+    import sys
+    import unittest
+    # use the zope.testrunner machinery to find all the
+    # test suites we've put under ourselves
+    import zope.testrunner.find
+    import zope.testrunner.options
+    here = os.path.abspath(os.path.join(os.path.dirname(__file__), 'src'))
+    args = sys.argv[:]
+    defaults = ["--test-path", here]
+    options = zope.testrunner.options.get_options(args, defaults)
+    suites = list(zope.testrunner.find.find_suites(options))
+    return unittest.TestSuite(suites)
+
 setup(name='zope.generations',
-      version = '3.7.2dev',
+      version = '4.0.0a1.dev',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope application schema generations',
@@ -49,6 +62,12 @@ setup(name='zope.generations',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: Zope Public License',
           'Programming Language :: Python',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 2.6',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.3',
+          'Programming Language :: Python :: Implementation :: CPython',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
@@ -59,8 +78,7 @@ setup(name='zope.generations',
       package_dir = {'': 'src'},
       namespace_packages=['zope'],
       extras_require = dict(test=[
-          'ZODB3',
-          'zope.app.publication',
+          'ZODB',
           'zope.site',
           'zope.testing',
           ]),
@@ -71,6 +89,13 @@ setup(name='zope.generations',
           'zope.interface',
           'zope.processlifetime',
           ],
+      tests_require = [
+          'ZODB',
+          'zope.site',
+          'zope.testing',
+          'zope.testrunner',
+          ],
+      test_suite = '__main__.alltests',
       include_package_data = True,
       zip_safe = False,
       )

@@ -12,11 +12,7 @@
 #
 ##############################################################################
 """Utility functions for evolving database generations.
-
-$Id$
 """
-__docformat__ = "reStructuredText"
-
 
 def findObjectsMatching(root, condition):
     """Find all objects in the root that match the condition.
@@ -78,7 +74,7 @@ def findObjectsProviding(root, interface):
 
     Example:
 
-    >>> from zope.interface import Interface, implements
+    >>> from zope.interface import Interface, implementer
     >>> class IA(Interface):
     ...     pass
     >>> class IB(Interface):
@@ -86,18 +82,18 @@ def findObjectsProviding(root, interface):
     >>> class IC(IA):
     ...     pass
 
-    >>> class A(dict):
-    ...     implements(IA)
+    >>> @implementer(IA)
+    ... class A(dict):
     ...     def __init__(self, name):
     ...         self.name = name
 
-    >>> class B(dict):
-    ...     implements(IB)
+    >>> @implementer(IB)
+    ... class B(dict):
     ...     def __init__(self, name):
     ...         self.name = name
 
-    >>> class C(dict):
-    ...     implements(IC)
+    >>> @implementer(IC)
+    ... class C(dict):
     ...     def __init__(self, name):
     ...         self.name = name
 
@@ -128,39 +124,39 @@ def findObjectsProviding(root, interface):
 
 try:
     import zope.app.publication.zopepublication
-except:
-    pass
+except ImportError:
+    ROOT_NAME = 'Application'
 else:
-    def getRootFolder(context):
-        """Get the root folder of the ZODB.
+    ROOT_NAME = zope.app.publication.zopepublication.ZopePublication.root_name
 
-        We need some set up. Create a database:
+def getRootFolder(context):
+    """Get the root folder of the ZODB.
 
-        >>> from ZODB.tests.util import DB
-        >>> from zope.generations.generations import Context
-        >>> db = DB()
-        >>> context = Context()
-        >>> context.connection = db.open()
-        >>> root = context.connection.root()
+    We need some set up. Create a database:
 
-        Add a root folder:
+    >>> from ZODB.tests.util import DB
+    >>> from zope.generations.generations import Context
+    >>> db = DB()
+    >>> context = Context()
+    >>> context.connection = db.open()
+    >>> root = context.connection.root()
 
-        >>> from zope.site.folder import rootFolder
-        >>> from zope.app.publication.zopepublication import ZopePublication
-        >>> import transaction
-        >>> root[ZopePublication.root_name] = rootFolder()
-        >>> transaction.commit()
+    Add a root folder:
 
-        Now we can get the root folder using the function:
+    >>> from zope.site.folder import rootFolder
+    >>> import transaction
+    >>> root[ROOT_NAME] = rootFolder()
+    >>> transaction.commit()
 
-        >>> getRootFolder(context) # doctest: +ELLIPSIS
-        <zope.site.folder.Folder object at ...>
+    Now we can get the root folder using the function:
 
-        We'd better clean up:
+    >>> getRootFolder(context) # doctest: +ELLIPSIS
+    <zope.site.folder.Folder object at ...>
 
-        >>> context.connection.close()
-        >>> db.close()
+    We'd better clean up:
 
-        """
-        return context.connection.root().get(
-            zope.app.publication.zopepublication.ZopePublication.root_name, None)
+    >>> context.connection.close()
+    >>> db.close()
+
+    """
+    return context.connection.root().get(ROOT_NAME, None)

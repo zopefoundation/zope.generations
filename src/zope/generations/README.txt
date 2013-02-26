@@ -14,7 +14,7 @@ connection:
 
     >>> import cgi
     >>> from pprint import pprint
-    >>> from zope.interface import implements
+    >>> from zope.interface import implementer
 
     >>> from ZODB.tests.util import DB
     >>> db = DB()
@@ -94,8 +94,8 @@ one):
     >>> gsm.unregisterUtility(provided=ISchemaManager, name='some.app')
     True
 
-    >>> class MySchemaManager(object):
-    ...     implements(ISchemaManager)
+    >>> @implementer(ISchemaManager)
+    ... class MySchemaManager(object):
     ...
     ...     minimum_generation = 1
     ...     generation = 2
@@ -104,10 +104,10 @@ one):
     ...         root = context.connection.root()
     ...         answers = root['answers']
     ...         if generation == 1:
-    ...             for question, answer in answers.items():
+    ...             for question, answer in list(answers.items()):
     ...                 answers[question] = cgi.escape(answer)
     ...         elif generation == 2:
-    ...             for question, answer in answers.items():
+    ...             for question, answer in list(answers.items()):
     ...                 del answers[question]
     ...                 answers[cgi.escape(question)] = answer
     ...         else:
@@ -236,8 +236,8 @@ verify the result:
     ...     provided=ISchemaManager, name='another.app-extension')
     True
 
-    >>> class FoundationSchemaManager(object):
-    ...     implements(ISchemaManager)
+    >>> @implementer(ISchemaManager)
+    ... class FoundationSchemaManager(object):
     ...
     ...     minimum_generation = 1
     ...     generation = 1
@@ -247,14 +247,14 @@ verify the result:
     ...         ordering = root.get('ordering', [])
     ...         if generation == 1:
     ...             ordering.append('foundation 1')
-    ...             print 'foundation generation 1'
+    ...             print('foundation generation 1')
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['ordering'] = ordering # ping persistence
     ...         transaction.commit()
 
-    >>> class DependentSchemaManager(object):
-    ...     implements(ISchemaManager)
+    >>> @implementer(ISchemaManager)
+    ... class DependentSchemaManager(object):
     ...
     ...     minimum_generation = 1
     ...     generation = 1
@@ -264,7 +264,7 @@ verify the result:
     ...         ordering = root.get('ordering', [])
     ...         if generation == 1:
     ...             ordering.append('dependent 1')
-    ...             print 'dependent generation 1'
+    ...             print('dependent generation 1')
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['ordering'] = ordering # ping persistence
@@ -307,8 +307,8 @@ Let's define a new schema manager that includes installation:
     >>> gsm.unregisterUtility(provided=ISchemaManager, name='some.app')
     True
     >>> from zope.generations.interfaces import IInstallableSchemaManager
-    >>> class MySchemaManager(object):
-    ...     implements(IInstallableSchemaManager)
+    >>> @implementer(IInstallableSchemaManager)
+    ... class MySchemaManager(object):
     ...
     ...     minimum_generation = 1
     ...     generation = 2

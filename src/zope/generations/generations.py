@@ -19,14 +19,15 @@ import transaction
 import zope.component
 import zope.interface
 
-from interfaces import GenerationTooHigh, GenerationTooLow, UnableToEvolve
-from interfaces import ISchemaManager, IInstallableSchemaManager
+from .interfaces import GenerationTooHigh, GenerationTooLow, UnableToEvolve
+from .interfaces import ISchemaManager, IInstallableSchemaManager
 
 
 logger = logging.getLogger('zope.generations')
 old_generations_key = 'zope.app.generations'
 generations_key = 'zope.generations'
 
+@zope.interface.implementer(IInstallableSchemaManager)
 class SchemaManager(object):
     """Schema manager
 
@@ -113,8 +114,6 @@ class SchemaManager(object):
 
        """
 
-    zope.interface.implements(IInstallableSchemaManager)
-
     def __init__(self, minimum_generation=0, generation=0, package_name=None):
         if generation < minimum_generation:
             raise ValueError("generation is less than minimum_generation",
@@ -143,12 +142,18 @@ class SchemaManager(object):
     def install(self, context):
         """Evolve a database to reflect software/schema changes
         """
+        if self.package_name is None:
+            return
+
         name = "%s.install" % self.package_name
 
         try:
             evolver = __import__(name, {}, {}, ['*'])
-        except ImportError, m:
+        except ImportError as m:
+            if 'None' in name:
+                import pdb; pdb.set_trace()
             if str(m) not in ('No module named %s' % name,
+                              "No module named '%s'" %name,
                               'No module named install'):
                 # This was an import error *within* the module, so we re-raise.
                 raise
@@ -188,8 +193,8 @@ def evolve(db, how=EVOLVE):
     Here's an example (silly) schema manager:
 
       >>> from zope.generations.interfaces import ISchemaManager
-      >>> class FauxApp(object):
-      ...     zope.interface.implements(ISchemaManager)
+      >>> @zope.interface.implementer(ISchemaManager)
+      ... class FauxApp(object):
       ...
       ...     erron = None # Raise an error is asked to evolve to this
       ...
@@ -209,7 +214,7 @@ def evolve(db, how=EVOLVE):
       >>> from zope.testing import loggingsupport
       >>> loghandler = loggingsupport.InstalledHandler('zope.generations')
       >>> def print_log():
-      ...    print loghandler
+      ...    print(loghandler)
       ...    loghandler.clear()
 
     We also need to set up the component system, since we'll be

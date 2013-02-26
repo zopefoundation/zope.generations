@@ -15,7 +15,17 @@
 
 import zope.component.testing
 import doctest
+import re
 import unittest
+from zope.testing import renormalizing
+
+checker = renormalizing.RENormalizing([
+    # Python 3 unicode removed the "u".
+    (re.compile("u('.*?')"),
+     r"\1"),
+    (re.compile('u(".*?")'),
+     r"\1"),
+    ])
 
 
 def tearDownREADME(test):
@@ -24,13 +34,21 @@ def tearDownREADME(test):
 
 
 def test_suite():
+    flags = \
+        doctest.NORMALIZE_WHITESPACE | \
+        doctest.ELLIPSIS | \
+        doctest.IGNORE_EXCEPTION_DETAIL
     return unittest.TestSuite((
         doctest.DocFileSuite(
             'README.txt',
             setUp=zope.component.testing.setUp,
             tearDown=tearDownREADME,
             package='zope.generations',
+            checker=checker
             ),
-        doctest.DocTestSuite('zope.generations.generations'),
-        doctest.DocTestSuite('zope.generations.utility'),
+        doctest.DocTestSuite(
+                'zope.generations.generations',
+                checker=checker, optionflags=flags),
+        doctest.DocTestSuite(
+                'zope.generations.utility'),
         ))
