@@ -25,6 +25,11 @@ checker = renormalizing.RENormalizing([
      r"\1"),
     (re.compile('u(".*?")'),
      r"\1"),
+    # Python 2 bytes has no "b".
+    (re.compile("b('.*?')"),
+     r"\1"),
+    (re.compile('b(".*?")'),
+     r"\1"),
     ])
 
 
