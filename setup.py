@@ -26,6 +26,7 @@ def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
 
+
 def alltests():
     import os
     import sys
@@ -40,6 +41,7 @@ def alltests():
     options = zope.testrunner.options.get_options(args, defaults)
     suites = list(zope.testrunner.find.find_suites(options))
     return unittest.TestSuite(suites)
+
 
 setup(name='zope.generations',
       version='4.0.0a2.dev0',
@@ -96,8 +98,8 @@ setup(name='zope.generations',
           'zope.site',
           'zope.testing',
           'zope.testrunner',
-      test_suite = '__main__.alltests',
       ],
+      test_suite='__main__.alltests',
       include_package_data=True,
       zip_safe=False,
       )
