@@ -11,15 +11,12 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-"""Silly demo evolution module
+"""Silly demo evolution module."""
+import zope.generations.demo
 
-$Id$
-"""
-__docformat__ = 'restructuredtext'
 
 generation = 2
 
-import zope.generations.demo
 
 def evolve(context):
     """Evolver 2"""

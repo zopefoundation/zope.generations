@@ -12,8 +12,8 @@
 #
 ##############################################################################
 """Backward compatibility tests."""
-
 import unittest
+
 
 class BackwardCompatibilityTests(unittest.TestCase):
 

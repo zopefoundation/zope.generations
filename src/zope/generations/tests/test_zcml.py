@@ -15,10 +15,11 @@
 """
 import unittest
 
+
 class ZCMLTests(unittest.TestCase):
 
-    from zope.component.testing import setUp
-    from zope.component.testing import tearDown
+    from zope.component.testing import setUp  # noqa
+    from zope.component.testing import tearDown  # noqa
 
     def test_loadable(self):
         # N.B.:  this test deliberately avoids any "ftesting" / layers

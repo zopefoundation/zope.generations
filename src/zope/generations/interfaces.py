@@ -12,25 +12,23 @@
 #
 ##############################################################################
 """Interfaces for support for application database generations."""
-__docformat__ = 'restructuredtext'
-
 import zope.interface
 
+
 class GenerationError(Exception):
-    """A database generation is invalid
-    """
+    """A database generation is invalid."""
+
 
 class GenerationTooHigh(GenerationError):
-    """A database generation is higher than an application generation
-    """
+    """A database generation is higher than an application generation."""
+
 
 class GenerationTooLow(GenerationError):
-    """A database generation is lower than an application minimum generation
-    """
+    """A database generation is lower than application minimum generation."""
+
 
 class UnableToEvolve(GenerationError):
-    """A database can't evolve to an application minimum generation
-    """
+    """A database can't evolve to an application minimum generation."""
 
 
 class ISchemaManager(zope.interface.Interface):
@@ -69,6 +67,7 @@ class ISchemaManager(zope.interface.Interface):
 
         If no information is available, `None` should be returned.
         """
+
 
 class IInstallableSchemaManager(ISchemaManager):
     """Manage schema evolution for an application, including installation."""

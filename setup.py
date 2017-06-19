@@ -21,8 +21,10 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(*rnames):
-    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
+        return f.read()
 
 def alltests():
     import os
@@ -54,9 +56,9 @@ setup(name='zope.generations',
           read('src', 'zope', 'generations', 'README.txt')
           + '\n\n' +
           read('CHANGES.txt')
-          ),
-      keywords = "zope zodb schema generation",
-      classifiers = [
+      ),
+      keywords="zope zodb schema generation",
+      classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Environment :: Web Environment',
           'Intended Audience :: Developers',
@@ -75,27 +77,27 @@ setup(name='zope.generations',
       url='http://pypi.python.org/pypi/zope.generations',
       license='ZPL 2.1',
       packages=find_packages('src'),
-      package_dir = {'': 'src'},
+      package_dir={'': 'src'},
       namespace_packages=['zope'],
-      extras_require = dict(test=[
+      extras_require=dict(test=[
           'ZODB',
           'zope.site',
           'zope.testing',
-          ]),
+      ]),
       install_requires=[
           'setuptools',
           'transaction',
           'zope.component',
           'zope.interface',
           'zope.processlifetime',
-          ],
-      tests_require = [
+      ],
+      tests_require=[
           'ZODB',
           'zope.site',
           'zope.testing',
           'zope.testrunner',
-          ],
       test_suite = '__main__.alltests',
-      include_package_data = True,
-      zip_safe = False,
+      ],
+      include_package_data=True,
+      zip_safe=False,
       )
