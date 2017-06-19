@@ -16,11 +16,9 @@
 The evolution scripts in this package are pretty dumb. The just call
 the evolve function defined here with a generation number.
 
-$Id$
 """
-__docformat__ = 'restructuredtext'
-
 key = 'zope.generations.demo-generation'
+
 
 def evolve(context, generation):
     """Demo that "evolves" a database.

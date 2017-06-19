@@ -14,6 +14,7 @@
 """Utility functions for evolving database generations.
 """
 
+
 def findObjectsMatching(root, condition):
     """Find all objects in the root that match the condition.
 
@@ -66,6 +67,7 @@ def findObjectsMatching(root, condition):
         for subobj in root.values():
             for match in findObjectsMatching(subobj, condition):
                 yield match
+
 
 def findObjectsProviding(root, interface):
     """Find all objects in the root that provide the specified interface.
@@ -122,12 +124,14 @@ def findObjectsProviding(root, interface):
     for match in findObjectsMatching(root, interface.providedBy):
         yield match
 
+
 try:
     import zope.app.publication.zopepublication
 except ImportError:
     ROOT_NAME = 'Application'
 else:
     ROOT_NAME = zope.app.publication.zopepublication.ZopePublication.root_name
+
 
 def getRootFolder(context):
     """Get the root folder of the ZODB.

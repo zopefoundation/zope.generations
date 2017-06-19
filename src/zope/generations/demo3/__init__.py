@@ -14,4 +14,3 @@
 """Demo package for evolution scripts (3)"""
 
 key = 'zope.generations.demo-generation'
-

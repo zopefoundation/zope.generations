@@ -12,8 +12,6 @@
 #
 ##############################################################################
 """Support for application database generations."""
-__docformat__ = 'restructuredtext'
-
 import logging
 import transaction
 import zope.component
@@ -26,6 +24,7 @@ from .interfaces import ISchemaManager, IInstallableSchemaManager
 logger = logging.getLogger('zope.generations')
 old_generations_key = 'zope.app.generations'
 generations_key = 'zope.generations'
+
 
 @zope.interface.implementer(IInstallableSchemaManager)
 class SchemaManager(object):
@@ -98,7 +97,8 @@ class SchemaManager(object):
          >>> manager = SchemaManager(1, 3, 'zope.generations.demo2')
          >>> manager.install(context)
 
-       We handle ImportErrors within the script specially, so they get promoted:
+       We handle ImportErrors within the script specially, so they get
+       promoted:
 
          >>> manager = SchemaManager(1, 3, 'zope.generations.demo3')
          >>> manager.install(context)
@@ -131,8 +131,7 @@ class SchemaManager(object):
         self.package_name = package_name
 
     def evolve(self, context, generation):
-        """Evolve a database to reflect software/schema changes
-        """
+        """Evolve a database to reflect software/schema changes."""
         name = "%s.evolve%d" % (self.package_name, generation)
 
         evolver = __import__(name, {}, {}, ['*'])
@@ -140,8 +139,7 @@ class SchemaManager(object):
         evolver.evolve(context)
 
     def install(self, context):
-        """Evolve a database to reflect software/schema changes
-        """
+        """Evolve a database to reflect software/schema changes."""
         if self.package_name is None:
             return
 
@@ -150,10 +148,8 @@ class SchemaManager(object):
         try:
             evolver = __import__(name, {}, {}, ['*'])
         except ImportError as m:
-            if 'None' in name:
-                import pdb; pdb.set_trace()
             if str(m) not in ('No module named %s' % name,
-                              "No module named '%s'" %name,
+                              "No module named '%s'" % name,
                               'No module named install'):
                 # This was an import error *within* the module, so we re-raise.
                 raise
@@ -444,7 +440,6 @@ def evolve(db, how=EVOLVE):
                 generations = root[generations_key] = PersistentDict()
             transaction.commit()
 
-
         for key, manager in sorted(findManagers()):
             generation = generations.get(key)
 
@@ -497,8 +492,9 @@ def evolve(db, how=EVOLVE):
             else:
                 target = manager.generation
 
-            logger.info('%s/%s: currently at generation %d, targetting generation %d',
-                        db_name, key, generation, target)
+            logger.info(
+                '%s/%s: currently at generation %d, targetting generation %d',
+                db_name, key, generation, target)
 
             while generation < target:
                 generation += 1
