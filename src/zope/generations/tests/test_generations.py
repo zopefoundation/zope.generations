@@ -30,7 +30,11 @@ checker = renormalizing.RENormalizing([
      r"\1"),
     (re.compile('b(".*?")'),
      r"\1"),
-    ])
+    (re.compile('ModuleNotFoundError:'), 'ImportError:'),
+    (re.compile(
+        "No module named '?zope.nonexistingmodule'?"),
+     'No module named nonexistingmodule'),
+])
 
 
 def tearDownREADME(test):

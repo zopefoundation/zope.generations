@@ -1,0 +1,12 @@
+[run]
+branch = True
+source = zope.generations
+
+[report]
+precision = 2
+
+[paths]
+source =
+    src/
+    .tox/*/lib/python*/site-packages/
+    .tox/pypy*/site-packages/
