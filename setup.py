@@ -28,20 +28,20 @@ def read(*rnames):
 
 
 setup(name='zope.generations',
-      version='4.1.dev0',
+      version='4.1.0.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope application schema generations',
       long_description=(
-          read('README.txt')
+          read('README.rst')
           + '\n\n.. contents::\n\n' +
           '======================\n'
           'Detailed Documentation\n'
           '======================\n'
           + '\n\n' +
-          read('src', 'zope', 'generations', 'README.txt')
+          read('src', 'zope', 'generations', 'README.rst')
           + '\n\n' +
-          read('CHANGES.txt')
+          read('CHANGES.rst')
       ),
       keywords="zope zodb schema generation",
       classifiers=[
@@ -56,13 +56,14 @@ setup(name='zope.generations',
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
+          'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: Implementation :: CPython',
           'Programming Language :: Python :: Implementation :: PyPy',
           'Natural Language :: English',
           'Operating System :: OS Independent',
           'Topic :: Internet :: WWW/HTTP',
           'Framework :: Zope :: 3'],
-      url='http://pypi.python.org/pypi/zope.generations',
+      url='https://github.com/zopefoundation/zope.generations',
       license='ZPL 2.1',
       packages=find_packages('src'),
       package_dir={'': 'src'},

@@ -49,15 +49,15 @@ def test_suite():
         doctest.IGNORE_EXCEPTION_DETAIL
     return unittest.TestSuite((
         doctest.DocFileSuite(
-            'README.txt',
+            'README.rst',
             setUp=zope.component.testing.setUp,
             tearDown=tearDownREADME,
             package='zope.generations',
             checker=checker
             ),
         doctest.DocTestSuite(
-                'zope.generations.generations',
-                checker=checker, optionflags=flags),
+            'zope.generations.generations',
+            checker=checker, optionflags=flags),
         doctest.DocTestSuite(
-                'zope.generations.utility'),
+            'zope.generations.utility'),
         ))
