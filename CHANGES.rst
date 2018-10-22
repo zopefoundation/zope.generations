@@ -1,15 +1,15 @@
-=======
-CHANGES
-=======
+=========
+ CHANGES
+=========
 
-4.1 (unreleased)
-----------------
+4.1.0 (unreleased)
+==================
 
-- Nothing changed yet.
+- Add support for Python 3.7.
 
 
-4.0 (2017-07-20)
-----------------
+4.0.0 (2017-07-20)
+==================
 
 - Dropped support for Python 2.6 and 3.3.
 
@@ -17,7 +17,7 @@ CHANGES
 
 
 4.0.0a1 (2013-02-25)
---------------------
+====================
 
 - Added support for Python 3.3.
 
@@ -28,7 +28,7 @@ CHANGES
 
 
 3.7.1 (2011-12-22)
-------------------
+==================
 
 - Removed buildout part which was used during development but does not
   compile on Windows.
@@ -37,7 +37,7 @@ CHANGES
 
 
 3.7.0 (2010-09-18)
-------------------
+==================
 
 - Initial release extracted from `zope.app.generations`.
 
