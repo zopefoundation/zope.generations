@@ -31,8 +31,9 @@ phrases.  Let's keep it simple and store the data in a dict:
     >>> transaction.commit()
 
 
-Initial setup
--------------
+===============
+ Initial setup
+===============
 
 Here's some generations-specific code.  We will create and register a
 SchemaManager.  SchemaManagers are responsible for the actual updates of the
@@ -78,8 +79,9 @@ In real life you should never have to bother with this key directly,
 but you should be aware that it exists.
 
 
-Upgrade scenario
-----------------
+==================
+ Upgrade scenario
+==================
 
 Back to the story.  Some time passes and one of our clients gets hacked because
 we forgot to escape HTML special characters!  The horror!  We must fix this
@@ -145,8 +147,9 @@ you seek out old objects that you wish to update, by interface or by some other
 criteria.  They are easy to understand, check their docstrings.
 
 
-Generations in action
----------------------
+=======================
+ Generations in action
+=======================
 
 So, our furious client downloads our latest code and restarts Zope.  The event
 is automatically sent again:
@@ -189,7 +192,7 @@ subscriber which we have called previously.
 
 
 Ordering of schema managers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+===========================
 
 Frequently subsystems used to compose an application rely on other
 subsystems to operate properly.  If both subsystems provide schema
@@ -290,8 +293,9 @@ before the 'another.app-extension' evolver:
     ['foundation 1', 'dependent 1']
 
 
-Installation
-------------
+==============
+ Installation
+==============
 
 In the the example above, we manually initialized the answers.  We
 shouldn't have to do that manually.  The application should be able to
