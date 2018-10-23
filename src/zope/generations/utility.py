@@ -59,6 +59,15 @@ def findObjectsMatching(root, condition):
     >>> names.sort()
     >>> names
     ['a2', 'b2', 'c2']
+
+
+    If there is no ``values`` on the root, we stop.
+
+    >>> root = [1, 2, 3]
+    >>> found = list(findObjectsMatching(root, lambda x: True))
+    >>> found == [root]
+    True
+
     """
     if condition(root):
         yield root
@@ -128,8 +137,10 @@ def findObjectsProviding(root, interface):
 try:
     import zope.app.publication.zopepublication
 except ImportError:
+    # 'Application' is what ZopePublication uses, up through at least
+    # 4.3.1
     ROOT_NAME = 'Application'
-else:
+else: # pragma: no cover
     ROOT_NAME = zope.app.publication.zopepublication.ZopePublication.root_name
 
 
@@ -138,7 +149,7 @@ def getRootFolder(context):
 
     We need some set up. Create a database:
 
-    >>> from ZODB.tests.util import DB
+    >>> from ZODB.MappingStorage import DB
     >>> from zope.generations.generations import Context
     >>> db = DB()
     >>> context = Context()

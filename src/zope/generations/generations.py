@@ -47,7 +47,7 @@ class SchemaManager(object):
 
        and we'll create a test database and context:
 
-         >>> from ZODB.tests.util import DB
+         >>> from ZODB.MappingStorage import DB
          >>> db = DB()
          >>> context = Context()
          >>> context.connection = db.open()
@@ -230,7 +230,7 @@ def evolve(db, how=EVOLVE):
     If we create a new database, and evolve it, we'll simply update
     the generation data:
 
-      >>> from ZODB.tests.util import DB
+      >>> from ZODB.MappingStorage import DB
       >>> db = DB(database_name='testdb')
       >>> conn = db.open()
       >>> root = conn.root()

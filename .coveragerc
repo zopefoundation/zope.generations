@@ -4,6 +4,11 @@ source = zope.generations
 
 [report]
 precision = 2
+exclude_lines =
+    pragma: no cover
+    if __name__ == '__main__':
+    raise NotImplementedError
+    raise AssertionError
 
 [paths]
 source =

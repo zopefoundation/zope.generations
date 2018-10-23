@@ -12,12 +12,4 @@
 #
 ##############################################################################
 """Silly demo evolution module."""
-import zope.generations.demo
-import zope.nonexistingmodule  # noqa
-
-
-generation = 3
-
-
-def evolve(context):
-    pass
+raise ImportError("No module named nonexistingmodule")

@@ -19,11 +19,11 @@ class BackwardCompatibilityTests(unittest.TestCase):
 
     def setUp(self):
         from zope.generations.generations import old_generations_key
-        import ZODB.tests.util
+        from ZODB.MappingStorage import DB
         import persistent.mapping
         import transaction
 
-        self.db = ZODB.tests.util.DB(database_name='testdb')
+        self.db = DB(database_name='testdb')
         self.conn = self.db.open()
         self.root = self.conn.root()
         generation_data = persistent.mapping.PersistentMapping()
