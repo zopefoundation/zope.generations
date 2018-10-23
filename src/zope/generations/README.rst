@@ -12,11 +12,14 @@ http://wiki.zope.org/zope3/DatabaseGenerations
 We will be using the component architecture, and we will need a database and a
 connection:
 
-    >>> import cgi
+    >>> try:
+    ...     from html import escape
+    ... except ImportError:
+    ...     from cgi import escape
     >>> from pprint import pprint
     >>> from zope.interface import implementer
 
-    >>> from ZODB.tests.util import DB
+    >>> from ZODB.MappingStorage import DB
     >>> db = DB()
     >>> conn = db.open()
     >>> root = conn.root()
@@ -107,11 +110,11 @@ one):
     ...         answers = root['answers']
     ...         if generation == 1:
     ...             for question, answer in list(answers.items()):
-    ...                 answers[question] = cgi.escape(answer)
+    ...                 answers[question] = escape(answer)
     ...         elif generation == 2:
     ...             for question, answer in list(answers.items()):
     ...                 del answers[question]
-    ...                 answers[cgi.escape(question)] = answer
+    ...                 answers[escape(question)] = answer
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['answers'] = answers # ping persistence
@@ -329,11 +332,11 @@ Let's define a new schema manager that includes installation:
     ...         answers = root['answers']
     ...         if generation == 1:
     ...             for question, answer in answers.items():
-    ...                 answers[question] = cgi.escape(answer)
+    ...                 answers[question] = escape(answer)
     ...         elif generation == 2:
     ...             for question, answer in answers.items():
     ...                 del answers[question]
-    ...                 answers[cgi.escape(question)] = answer
+    ...                 answers[escape(question)] = answer
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['answers'] = answers # ping persistence

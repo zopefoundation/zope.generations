@@ -12,7 +12,6 @@
 #
 ##############################################################################
 """Silly demo evolution module."""
-import zope.generations.demo
 
 
 generation = 1
@@ -20,4 +19,4 @@ generation = 1
 
 def evolve(context):
     """Evolver 1"""
-    zope.generations.demo.evolve(context, generation)
+    raise AssertionError("We are never actually called")

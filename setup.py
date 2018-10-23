@@ -26,6 +26,12 @@ def read(*rnames):
     with open(os.path.join(os.path.dirname(__file__), *rnames)) as f:
         return f.read()
 
+TESTS_REQUIRE = [
+    'ZODB',
+    'zope.site',
+    'zope.testing',
+    'zope.testrunner',
+]
 
 setup(name='zope.generations',
       version='4.1.1.dev0',
@@ -68,11 +74,9 @@ setup(name='zope.generations',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope'],
-      extras_require=dict(test=[
-          'ZODB',
-          'zope.site',
-          'zope.testing',
-      ]),
+      extras_require={
+          'test': TESTS_REQUIRE,
+      },
       install_requires=[
           'setuptools',
           'transaction',
@@ -80,12 +84,7 @@ setup(name='zope.generations',
           'zope.interface',
           'zope.processlifetime',
       ],
-      tests_require=[
-          'ZODB',
-          'zope.site',
-          'zope.testing',
-          'zope.testrunner',
-      ],
+      tests_require=TESTS_REQUIRE,
       include_package_data=True,
       zip_safe=False,
       )
