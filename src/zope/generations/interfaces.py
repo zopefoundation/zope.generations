@@ -43,22 +43,28 @@ class ISchemaManager(zope.interface.Interface):
     def evolve(context, generation):
         """Evolve a database to the given schema generation.
 
-        The database should be assumed to be at the schema
-        generation one less than the given `generation`
-        argument. In other words, the `evolve` method is only
-        required to make one evolutionary step.
+        The database should be assumed to be at the schema generation
+        one less than the given `generation` argument. In other words,
+        the `evolve` method is only required to make one evolutionary
+        step.
 
-        The `context` argument has a connection attribute,
-        providing a database connection to be used to change
-        the database.  A `context` argument is passed rather than
-        a connection to make it possible to provide additional
-        information later, if it becomes necessary.
+        The `context` argument has a connection attribute, providing a
+        database connection to be used to change the database. A
+        `context` argument is passed rather than a connection to make
+        it possible to provide additional information later, if it
+        becomes necessary.
 
-        This method should *not* commit a transaction.  The
-        transaction will be committed by the caller if there is no
-        error.  It is acceptable to commit a transaction if there are no
-        subsequent operations.  The method may create savepoints.
+        This method should *not* commit a transaction. The transaction
+        will be committed by the caller if there is no error. The
+        method may create savepoints.
 
+        .. versionchanged:: 5.0
+
+            Previously this documentation contained a provision for committing
+            the transaction "if there are no subsequent operations." That
+            was unclear and incompatible with explicit transaction managers.
+
+            Now, this method must *never* commit the transaction.
         """
 
     def getInfo(generation):
@@ -76,12 +82,18 @@ class IInstallableSchemaManager(ISchemaManager):
         """Perform any initial installation tasks
 
         The application has never had the application installed
-        before.  The schema manager should bring the database to the
+        before. The schema manager should bring the database to the
         current generation.
 
-        This method should *not* commit a transaction.  The
-        transaction will be committed by the caller if there is no
-        error.  It is acceptable to commit a transaction if there are no
-        subsequent operations.  The method may create savepoints.
+        This method should *not* commit a transaction. The transaction
+        will be committed by the caller if there is no error. The
+        method may create savepoints.
 
+        .. versionchanged:: 5.0
+
+            Previously this documentation contained a provision for committing
+            the transaction "if there are no subsequent operations." That
+            was unclear and incompatible with explicit transaction managers.
+
+            Now, this method must *never* commit the transaction.
         """

@@ -2,10 +2,15 @@
  CHANGES
 =========
 
-4.1.1 (unreleased)
+5.0.0 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Add support for transaction managers operating in explicit mode.
+  Schema managers were previously required not to commit transactions
+  in their ``evolve`` or ``install`` methods, but a loophole was open
+  to allow them to commit "if there were no subsequent operations".
+  That loophole is now closed, at least in explicit mode. See `issue 8
+  <https://github.com/zopefoundation/zope.generations/issues/8>`_.
 
 
 4.1.0 (2018-10-23)
@@ -45,7 +50,7 @@
 3.7.0 (2010-09-18)
 ==================
 
-- Initial release extracted from `zope.app.generations`.
+- Initial release extracted from ``zope.app.generations``.
 
 - Generations key (stored in database root) has been changed from
   ``zope.app.generations`` to ``zope.generations``.  Migration is done when

@@ -17,7 +17,7 @@ import doctest
 import re
 import unittest
 
-import zope.component.testing
+from zope.testing import cleanup
 from zope.testing import renormalizing
 
 
@@ -55,7 +55,7 @@ class TestSchemaManager(unittest.TestCase):
             self._makeOne(generation=1)
 
 
-class TestEvolve(zope.component.testing.PlacelessSetup,
+class TestEvolve(cleanup.CleanUp,
                  unittest.TestCase):
 
     def test_error_on_install_propagates(self):
@@ -123,6 +123,18 @@ class TestEvolve(zope.component.testing.PlacelessSetup,
         evolve(db, EVOLVEMINIMUM)
         self.assertEqual(manager.evolved, (2,))
 
+class TestEvolveExplicit(TestEvolve):
+
+    def setUp(self):
+        super(TestEvolveExplicit, self).setUp()
+        import transaction
+        self.txm = transaction.manager
+        self.txm_explicit = self.txm.explicit
+        self.txm.explicit = True
+
+    def tearDown(self):
+        self.txm.explicit = self.txm_explicit
+
 
 class TestSubscribers(unittest.TestCase):
 
@@ -184,30 +196,59 @@ checker = renormalizing.RENormalizing([
 ])
 
 
-def tearDownREADME(test):
-    zope.component.testing.tearDown(test)
-    test.globs['db'].close()
-
-
 def test_suite():
     suite = unittest.defaultTestLoader.loadTestsFromName(__name__)
     flags = \
         doctest.NORMALIZE_WHITESPACE | \
         doctest.ELLIPSIS | \
         doctest.IGNORE_EXCEPTION_DETAIL
-    docs = unittest.TestSuite((
-        doctest.DocFileSuite(
-            'README.rst',
-            setUp=zope.component.testing.setUp,
-            tearDown=tearDownREADME,
-            package='zope.generations',
-            checker=checker
+
+    def setUpGeneric(test):
+        cleanup.setUp()
+
+    def tearDownGeneric(test):
+        if 'db' in test.globs:
+            test.globs['db'].close()
+        cleanup.tearDown()
+
+    def setUpExplicit(test):
+        setUpGeneric(test)
+        import transaction
+        manager = test.globs['_txm'] = transaction.manager
+        test.globs['_was_explicit'] = manager.explicit
+        manager.explicit = True
+
+    def tearDownExplicit(test):
+        test.globs['_txm'] = test.globs['_was_explicit']
+        tearDownGeneric(test)
+
+    doc_tests = []
+
+    for setUp, tearDown in (
+            (setUpGeneric, tearDownGeneric),
+            (setUpExplicit, tearDownExplicit),
+    ):
+        doc_tests.extend([
+            doctest.DocFileSuite(
+                'README.rst',
+                setUp=setUp,
+                tearDown=tearDown,
+                package='zope.generations',
+                checker=checker
             ),
-        doctest.DocTestSuite(
-            'zope.generations.generations',
-            checker=checker, optionflags=flags),
-        doctest.DocTestSuite(
-            'zope.generations.utility'),
-        ))
-    suite.addTest(docs)
+            doctest.DocTestSuite(
+                'zope.generations.generations',
+                checker=checker,
+                optionflags=flags,
+                setUp=setUp,
+                tearDown=tearDown,
+            ),
+            doctest.DocTestSuite(
+                'zope.generations.utility',
+                setUp=setUp,
+                tearDown=tearDown,
+            ),
+        ])
+
+    suite.addTest(unittest.TestSuite(doc_tests))
     return suite
