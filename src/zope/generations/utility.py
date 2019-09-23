@@ -151,17 +151,19 @@ def getRootFolder(context):
 
     >>> from ZODB.MappingStorage import DB
     >>> from zope.generations.generations import Context
+    >>> import transaction
     >>> db = DB()
     >>> context = Context()
+    >>> tx = transaction.begin()
     >>> context.connection = db.open()
     >>> root = context.connection.root()
 
     Add a root folder:
 
     >>> from zope.site.folder import rootFolder
-    >>> import transaction
     >>> root[ROOT_NAME] = rootFolder()
-    >>> transaction.commit()
+    >>> tx.commit()
+    >>> tx = transaction.begin()
 
     Now we can get the root folder using the function:
 
@@ -170,6 +172,7 @@ def getRootFolder(context):
 
     We'd better clean up:
 
+    >>> tx.abort()
     >>> context.connection.close()
     >>> db.close()
 

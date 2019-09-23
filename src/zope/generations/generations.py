@@ -55,13 +55,15 @@ class SchemaManager(object):
        Then we'll evolve the database from generation 1 to 3:
 
          >>> import transaction
+         >>> tx = transaction.begin()
          >>> manager.evolve(context, 2)
          >>> manager.evolve(context, 3)
-         >>> transaction.commit()
+         >>> tx.commit()
 
        The demo evolvers simply record their data in a root key:
 
          >>> from zope.generations.demo import key
+         >>> tx = transaction.begin()
          >>> conn = db.open()
          >>> conn.root()[key]
          (2, 3)
@@ -80,14 +82,16 @@ class SchemaManager(object):
        If a package provides an install script, then it will be called
        when the manager's intall method is called:
 
-         >>> conn.sync()
+         >>> tx.abort()
+         >>> tx = transaction.begin()
          >>> del conn.root()[key]
-         >>> transaction.commit()
+         >>> tx.commit()
+         >>> tx = transaction.begin()
          >>> conn.root().get(key)
 
          >>> manager.install(context)
-         >>> transaction.commit()
-         >>> conn.sync()
+         >>> tx.commit()
+         >>> tx = transaction.begin()
          >>> conn.root()[key]
          ('installed',)
 
@@ -107,6 +111,7 @@ class SchemaManager(object):
 
        We'd better clean up:
 
+         >>> tx.abort()
          >>> context.connection.close()
          >>> conn.close()
          >>> db.close()
@@ -165,7 +170,7 @@ class SchemaManager(object):
 
 
 class Context(object):
-    pass
+    connection = None
 
 
 def findManagers():
@@ -213,12 +218,6 @@ def evolve(db, how=EVOLVE):
       ...    print(loghandler)
       ...    loghandler.clear()
 
-    We also need to set up the component system, since we'll be
-    registering utilities:
-
-      >>> from zope.component.testing import setUp, tearDown
-      >>> setUp()
-
     Now, we'll create and register some handlers:
 
       >>> import zope.component
@@ -232,10 +231,9 @@ def evolve(db, how=EVOLVE):
 
       >>> from ZODB.MappingStorage import DB
       >>> db = DB(database_name='testdb')
+      >>> evolve(db)
       >>> conn = db.open()
       >>> root = conn.root()
-      >>> evolve(db)
-      >>> conn.sync()
       >>> root[generations_key]['app1']
       1
       >>> root[generations_key]['app2']
@@ -267,7 +265,6 @@ def evolve(db, how=EVOLVE):
 
     We'll see that the generation data has updated:
 
-      >>> conn.sync()
       >>> root[generations_key]['app1']
       2
       >>> root[generations_key]['app2']
@@ -308,7 +305,6 @@ def evolve(db, how=EVOLVE):
 
     The database will have been updated for previous generations:
 
-      >>> conn.sync()
       >>> root[generations_key]['app1']
       3
       >>> root.get('app1')
@@ -369,7 +365,6 @@ def evolve(db, how=EVOLVE):
     app1.  The database generation for app1 is still 3 because we
     didn't do any evolution:
 
-      >>> conn.sync()
       >>> root[generations_key]['app1']
       3
       >>> root.get('app1')
@@ -379,7 +374,6 @@ def evolve(db, how=EVOLVE):
     generation:
 
       >>> evolve(db, EVOLVEMINIMUM)
-      >>> conn.sync()
       >>> root[generations_key]['app1']
       4
       >>> root.get('app1')
@@ -415,6 +409,7 @@ def evolve(db, how=EVOLVE):
 
     We'd better clean up:
 
+      >>> from zope.testing.cleanup import tearDown
       >>> loghandler.uninstall()
       >>> conn.close()
       >>> db.close()
@@ -422,51 +417,50 @@ def evolve(db, how=EVOLVE):
 
     """
     db_name = db.database_name or 'main db'
-    logger.info('%s: evolving in mode %s' %
-                (db_name, how))
+    logger.info('%s: evolving in mode %s',
+                db_name, how)
     conn = db.open()
     try:
         context = Context()
         context.connection = conn
-        root = conn.root()
-        generations = root.get(generations_key)
-        if generations is None:
-            # backward compatibility with zope.app.generations
-            generations = root.get(old_generations_key)
-            if generations is not None:
-                # switch over to new generations_key
-                root[generations_key] = generations
-            else:
-                generations = root[generations_key] = PersistentDict()
-            transaction.commit()
+        with transaction.manager:
+            root = conn.root()
+            generations = root.get(generations_key)
+            if generations is None:
+                # backward compatibility with zope.app.generations
+                generations = root.get(old_generations_key)
+                if generations is not None:
+                    # switch over to new generations_key
+                    root[generations_key] = generations
+                else:
+                    generations = root[generations_key] = PersistentDict()
 
         for key, manager in sorted(findManagers()):
-            generation = generations.get(key)
+            with transaction.manager as tx:
+                generation = generations.get(key)
 
-            if generation == manager.generation:
-                logger.debug('%s/%s: up-to-date at generation %s' %
-                             (db_name, key, generation))
-                continue
+                if generation == manager.generation:
+                    logger.debug('%s/%s: up-to-date at generation %s',
+                                 db_name, key, generation)
+                    continue
 
-            if generation is None:
-                # This is a new database, so no old data
+                if generation is None:
+                    # This is a new database, so no old data
 
-                if IInstallableSchemaManager.providedBy(manager):
-                    try:
-                        transaction.get().note('%s: running install generation'
-                                               % key)
-                        logger.info("%s/%s: running install generation",
-                                    db_name, key)
-                        manager.install(context)
-                    except:
-                        transaction.abort()
-                        logger.exception("%s/%s: failed to run install",
-                                         db_name, key)
-                        raise
+                    if IInstallableSchemaManager.providedBy(manager):
+                        try:
+                            tx.note('%s: running install generation'
+                                    % key)
+                            logger.info("%s/%s: running install generation",
+                                        db_name, key)
+                            manager.install(context)
+                        except:
+                            logger.exception("%s/%s: failed to run install",
+                                             db_name, key)
+                            raise
 
-                generations[key] = manager.generation
-                transaction.commit()
-                continue
+                    generations[key] = manager.generation
+                    continue
 
             if generation > manager.generation:
                 logger.error('%s/%s: current generation too high (%d > %d)',
@@ -498,17 +492,18 @@ def evolve(db, how=EVOLVE):
 
             while generation < target:
                 generation += 1
+                tx = transaction.begin()
                 try:
-                    transaction.begin().note('%s: evolving to generation %d'
-                                             % (key, generation))
+                    tx.note('%s: evolving to generation %d'
+                            % (key, generation))
                     logger.debug('%s/%s: evolving to generation %d',
                                  db_name, key, generation)
                     manager.evolve(context, generation)
                     generations[key] = generation
-                    transaction.commit()
+                    tx.commit()
                 except:
                     # An unguarded handler is intended here
-                    transaction.abort()
+                    tx.abort()
                     logger.exception(
                         "%s/%s: failed to evolve to generation %d",
                         db_name, key, generation)

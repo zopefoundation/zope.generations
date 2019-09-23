@@ -18,10 +18,11 @@ connection:
     ...     from cgi import escape
     >>> from pprint import pprint
     >>> from zope.interface import implementer
-
+    >>> import transaction
     >>> from ZODB.MappingStorage import DB
     >>> db = DB()
     >>> conn = db.open()
+    >>> tx = transaction.begin()
     >>> root = conn.root()
 
 Imagine that our application is an oracle: you can teach it to react to
@@ -31,7 +32,7 @@ phrases.  Let's keep it simple and store the data in a dict:
     ...                    'Meaning of life?': '42',
     ...                    'four < ?': 'four < five'}
     >>> import transaction
-    >>> transaction.commit()
+    >>> tx.commit()
 
 
 ===============
@@ -75,8 +76,10 @@ that our current schema number is 0.  When we update the schema, Zope3 will
 have an idea of what the starting point was.  Here, see?
 
     >>> from zope.generations.generations import generations_key
+    >>> tx = transaction.begin()
     >>> root[generations_key]['some.app']
     0
+    >>> tx.abort()
 
 In real life you should never have to bother with this key directly,
 but you should be aware that it exists.
@@ -118,7 +121,6 @@ one):
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['answers'] = answers # ping persistence
-    ...         transaction.commit()
 
     >>> manager = MySchemaManager()
     >>> zope.component.provideUtility(manager, ISchemaManager, name='some.app')
@@ -162,6 +164,7 @@ is automatically sent again:
 
 Shazam!  The client is happy again!
 
+    >>> tx = transaction.begin()
     >>> pprint(root['answers'])
     {'Hello': 'Hi &amp; how do you do?',
      'Meaning of life?': '42',
@@ -174,6 +177,7 @@ to 1:
 
     >>> root[generations_key]['some.app']
     1
+    >>> tx.abort()
 
 We see that generations are working, so we decide to take the next step
 and evolve to generation 2.  Let's see how this can be done manually:
@@ -181,12 +185,14 @@ and evolve to generation 2.  Let's see how this can be done manually:
     >>> from zope.generations.generations import evolve
     >>> evolve(db)
 
+    >>> tx = transaction.begin()
     >>> pprint(root['answers'])
     {'Hello': 'Hi &amp; how do you do?',
      'Meaning of life?': '42',
      'four &lt; ?': 'four &lt; five'}
     >>> root[generations_key]['some.app']
     2
+    >>> tx.abort()
 
 Default behaviour of `evolve` upgrades to the latest generation provided by
 the SchemaManager. You can use the `how` argument to evolve() when you want
@@ -257,7 +263,6 @@ verify the result:
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['ordering'] = ordering # ping persistence
-    ...         transaction.commit()
 
     >>> @implementer(ISchemaManager)
     ... class DependentSchemaManager(object):
@@ -274,7 +279,6 @@ verify the result:
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['ordering'] = ordering # ping persistence
-    ...         transaction.commit()
 
     >>> manager1 = FoundationSchemaManager()
     >>> manager2 = DependentSchemaManager()
@@ -325,7 +329,6 @@ Let's define a new schema manager that includes installation:
     ...         root['answers'] = {'Hello': 'Hi &amp; how do you do?',
     ...                            'Meaning of life?': '42',
     ...                            'four &lt; ?': 'four &lt; five'}
-    ...         transaction.commit()
     ...
     ...     def evolve(self, context, generation):
     ...         root = context.connection.root()
@@ -340,24 +343,26 @@ Let's define a new schema manager that includes installation:
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['answers'] = answers # ping persistence
-    ...         transaction.commit()
 
     >>> manager = MySchemaManager()
     >>> zope.component.provideUtility(manager, ISchemaManager, name='some.app')
 
 Now, lets open a new database:
 
+    >>> conn.close()
     >>> db.close()
+
     >>> db = DB()
+    >>> tx = transaction.begin()
     >>> conn = db.open()
     >>> 'answers' in conn.root()
     False
-
+    >>> tx.abort()
 
     >>> event = DatabaseOpenedEventStub(db)
     >>> evolveMinimumSubscriber(event)
 
-    >>> conn.sync()
+    >>> tx = transaction.begin()
     >>> root = conn.root()
 
     >>> pprint(root['answers'])
@@ -366,12 +371,11 @@ Now, lets open a new database:
      'four &lt; ?': 'four &lt; five'}
     >>> root[generations_key]['some.app']
     2
+    >>> tx.abort()
+    >>> conn.close()
 
 The ZODB transaction log notes that our install script was executed
 
-    >>> [it.description for it in conn.db().storage.iterator()][-2]
+    >>> [it.description for it in db.storage.iterator()][-1]
     u'some.app: running install generation'
-
-(Minor note: it's not the last record because there are two commits:
-MySchemaManager performs one, and evolveMinimumSubscriber performs
-the second one.  MySchemaManager doesn't really need to commit.)
+    >>> db.close()
