@@ -22,22 +22,19 @@ def findObjectsMatching(root, condition):
     argument and must return `True` or `False`.
 
     All sub-objects of the root will also be searched recursively. All mapping
-    objects providing `values()` are supported.
+    objects providing ``values()`` are supported.
 
     Example:
 
     >>> class A(dict):
     ...     def __init__(self, name):
     ...         self.name = name
-
     >>> class B(dict):
     ...     def __init__(self, name):
     ...         self.name = name
-
     >>> class C(dict):
     ...     def __init__(self, name):
     ...         self.name = name
-
     >>> tree = A('a1')
     >>> tree['b1'] = B('b1')
     >>> tree['c1'] = C('c1')
@@ -46,14 +43,16 @@ def findObjectsMatching(root, condition):
     >>> tree['b1']['b2']['c2'] = C('c2')
     >>> tree['b1']['b2']['a3'] = A('a3')
 
-    # Find all instances of class A
+    Find all instances of class A:
+
     >>> matches = findObjectsMatching(tree, lambda x: isinstance(x, A))
     >>> names = [x.name for x in matches]
     >>> names.sort()
     >>> names
     ['a1', 'a2', 'a3']
 
-    # Find all objects having a '2' in the name
+    Find all objects having a '2' in the name:
+
     >>> matches = findObjectsMatching(tree, lambda x: '2' in x.name)
     >>> names = [x.name for x in matches]
     >>> names.sort()
@@ -61,14 +60,14 @@ def findObjectsMatching(root, condition):
     ['a2', 'b2', 'c2']
 
 
-    If there is no ``values`` on the root, we stop.
+    If there is no ``values`` on the root, we stop:
 
     >>> root = [1, 2, 3]
     >>> found = list(findObjectsMatching(root, lambda x: True))
     >>> found == [root]
     True
-
     """
+
     if condition(root):
         yield root
 
@@ -92,22 +91,18 @@ def findObjectsProviding(root, interface):
     ...     pass
     >>> class IC(IA):
     ...     pass
-
     >>> @implementer(IA)
     ... class A(dict):
     ...     def __init__(self, name):
     ...         self.name = name
-
     >>> @implementer(IB)
     ... class B(dict):
     ...     def __init__(self, name):
     ...         self.name = name
-
     >>> @implementer(IC)
     ... class C(dict):
     ...     def __init__(self, name):
     ...         self.name = name
-
     >>> tree = A('a1')
     >>> tree['b1'] = B('b1')
     >>> tree['c1'] = C('c1')
@@ -116,20 +111,23 @@ def findObjectsProviding(root, interface):
     >>> tree['b1']['b2']['c2'] = C('c2')
     >>> tree['b1']['b2']['a3'] = A('a3')
 
-    # Find all objects that provide IB
+    Find all objects that provide IB:
+
     >>> matches = findObjectsProviding(tree, IB)
     >>> names = [x.name for x in matches]
     >>> names.sort()
     >>> names
     ['b1', 'b2']
 
-    # Find all objects that provide IA
+    Find all objects that provide IA:
+
     >>> matches = findObjectsProviding(tree, IA)
     >>> names = [x.name for x in matches]
     >>> names.sort()
     >>> names
     ['a1', 'a2', 'a3', 'c1', 'c2']
     """
+
     for match in findObjectsMatching(root, interface.providedBy):
         yield match
 
@@ -139,8 +137,15 @@ try:
 except ImportError:
     # 'Application' is what ZopePublication uses, up through at least
     # 4.3.1
+
+    #: The name of the root folder.
+    #: If ``zope.app.publication.zopepublication`` is available,
+    #: this is imported from there.
     ROOT_NAME = 'Application'
 else: # pragma: no cover
+    #: The name of the root folder.
+    #: If ``zope.app.publication.zopepublication`` is available,
+    #: this is imported from there.
     ROOT_NAME = zope.app.publication.zopepublication.ZopePublication.root_name
 
 

@@ -1,3 +1,9 @@
+=============
+ Generations
+=============
+
+.. currentmodule:: zope.generations.generations
+
 Generations are a way of updating objects in the database when the application
 schema changes.  An application schema is essentially the structure of data,
 the structure of classes in the case of ZODB or the table descriptions in the
@@ -35,17 +41,17 @@ phrases.  Let's keep it simple and store the data in a dict:
     >>> tx.commit()
 
 
-===============
- Initial setup
-===============
+Initial setup
+=============
 
 Here's some generations-specific code.  We will create and register a
 SchemaManager.  SchemaManagers are responsible for the actual updates of the
 database.  This one will be just a dummy.  The point here is to make the
 generations module aware that our application supports generations.
 
-The default implementation of SchemaManager is not suitable for this test
-because it uses Python modules to manage generations.  For now, it
+The :class:`default implementation of SchemaManager
+<SchemaManager>` is not suitable for this
+test because it uses Python modules to manage generations. For now, it
 will be just fine, since we don't want it to do anything just yet.
 
     >>> from zope.generations.interfaces import ISchemaManager
@@ -59,15 +65,14 @@ will be just fine, since we don't want it to do anything just yet.
 of your package.
 
 When you start Zope and a database is opened, an event
-IDatabaseOpenedWithRoot is sent.  Zope registers
-evolveMinimumSubscriber by default as a handler for this event.  Let's
-simulate this:
+``IDatabaseOpenedWithRoot`` is sent. Zope registers
+`evolveMinimumSubscriber` by default as a handler for this event.
+Let's simulate this:
 
     >>> class DatabaseOpenedEventStub(object):
     ...     def __init__(self, database):
     ...         self.database = database
     >>> event = DatabaseOpenedEventStub(db)
-
     >>> from zope.generations.generations import evolveMinimumSubscriber
     >>> evolveMinimumSubscriber(event)
 
@@ -85,9 +90,8 @@ In real life you should never have to bother with this key directly,
 but you should be aware that it exists.
 
 
-==================
- Upgrade scenario
-==================
+Upgrade scenario
+================
 
 Back to the story.  Some time passes and one of our clients gets hacked because
 we forgot to escape HTML special characters!  The horror!  We must fix this
@@ -101,7 +105,6 @@ one):
     >>> gsm = globalregistry.getGlobalSiteManager()
     >>> gsm.unregisterUtility(provided=ISchemaManager, name='some.app')
     True
-
     >>> @implementer(ISchemaManager)
     ... class MySchemaManager(object):
     ...
@@ -121,40 +124,41 @@ one):
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['answers'] = answers # ping persistence
-
     >>> manager = MySchemaManager()
     >>> zope.component.provideUtility(manager, ISchemaManager, name='some.app')
 
-We have set `minimum_generation` to 1.  That means that our application
-will refuse to run with a database older than generation 1.  The `generation`
+We have set *minimum_generation* to 1.  That means that our application
+will refuse to run with a database older than generation 1.  The *generation*
 attribute is set to 2, which means that the latest generation that this
 SchemaManager knows about is 2.
 
-evolve() is the workhorse here.  Its job is to get the database from
-`generation`-1 to `generation`.  It gets a context which has the attribute
-'connection', which is a connection to the ZODB.  You can use that to change
-objects like in this example.
+`evolve` is the workhorse here. Its job is to get the database from
+``generation - 1`` to *generation*. It gets a context which has the
+attribute ``connection``, which is a connection to the ZODB. You can use
+that to change objects like in this example.
 
 In this particular implementation generation 1 escapes the answers (say,
 critical, because they can be entered by anyone!), generation 2 escapes the
 questions (say, less important, because these can be entered by authorized
 personell only).
 
-In fact, you don't really need a custom implementation of ISchemaManager.  One
-is available, we have used it for a dummy previously. It uses Python modules
-for organization of evolver functions.  See its docstring for more information.
+In fact, you don't really need a custom implementation of
+`~zope.generations.interfaces.ISchemaManager`. One is available at
+`SchemaManager`, and we have used it for a dummy previously. It uses
+Python modules for organization of evolver functions. See its
+docstring for more information.
 
-In real life you will have much more complex object structures than the one
-here.  To make your life easier, there are two very useful functions available
-in zope.generations.utility: findObjectsMatching() and
-findObjectsProviding().  They will dig through containers recursively to help
-you seek out old objects that you wish to update, by interface or by some other
-criteria.  They are easy to understand, check their docstrings.
+In real life you will have much more complex object structures than
+the one here. To make your life easier, there are two very useful
+functions available in :mod:`zope.generations.utility`:
+`~.findObjectsMatching` and `~.findObjectsProviding`. They will dig
+through containers recursively to help you seek out old objects that
+you wish to update, by interface or by some other criteria. They are
+easy to understand, check their docstrings.
 
 
-=======================
- Generations in action
-=======================
+Generations in action
+=====================
 
 So, our furious client downloads our latest code and restarts Zope.  The event
 is automatically sent again:
@@ -170,10 +174,10 @@ Shazam!  The client is happy again!
      'Meaning of life?': '42',
      'four < ?': 'four &lt; five'}
 
-Because evolveMinimumSubscriber is very lazy, it only updates the database just
-enough so that your application can use it (to the `minimum_generation`, that
-is).  Indeed, the marker indicates that the database generation has been bumped
-to 1:
+Because `evolveMinimumSubscriber` is very lazy, it only updates the
+database just enough so that your application can use it (to the
+*minimum_generation*, that is). Indeed, the marker indicates that the
+database generation has been bumped to 1:
 
     >>> root[generations_key]['some.app']
     1
@@ -184,7 +188,6 @@ and evolve to generation 2.  Let's see how this can be done manually:
 
     >>> from zope.generations.generations import evolve
     >>> evolve(db)
-
     >>> tx = transaction.begin()
     >>> pprint(root['answers'])
     {'Hello': 'Hi &amp; how do you do?',
@@ -195,7 +198,7 @@ and evolve to generation 2.  Let's see how this can be done manually:
     >>> tx.abort()
 
 Default behaviour of `evolve` upgrades to the latest generation provided by
-the SchemaManager. You can use the `how` argument to evolve() when you want
+the SchemaManager. You can use the *how* argument to `evolve` when you want
 just to check if you need to update or if you want to be lazy like the
 subscriber which we have called previously.
 
@@ -216,7 +219,6 @@ determined by sorting their names.
 
     >>> manager1 = SchemaManager(minimum_generation=0, generation=0)
     >>> manager2 = SchemaManager(minimum_generation=0, generation=0)
-
     >>> zope.component.provideUtility(
     ...     manager1, ISchemaManager, name='another.app')
     >>> zope.component.provideUtility(
@@ -230,7 +232,6 @@ Let's evolve the database to establish these generations:
 
     >>> event = DatabaseOpenedEventStub(db)
     >>> evolveMinimumSubscriber(event)
-
     >>> root[generations_key]['another.app']
     0
     >>> root[generations_key]['another.app-extension']
@@ -247,7 +248,6 @@ verify the result:
     >>> gsm.unregisterUtility(
     ...     provided=ISchemaManager, name='another.app-extension')
     True
-
     >>> @implementer(ISchemaManager)
     ... class FoundationSchemaManager(object):
     ...
@@ -263,7 +263,6 @@ verify the result:
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['ordering'] = ordering # ping persistence
-
     >>> @implementer(ISchemaManager)
     ... class DependentSchemaManager(object):
     ...
@@ -279,10 +278,8 @@ verify the result:
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['ordering'] = ordering # ping persistence
-
     >>> manager1 = FoundationSchemaManager()
     >>> manager2 = DependentSchemaManager()
-
     >>> zope.component.provideUtility(
     ...     manager1, ISchemaManager, name='another.app')
     >>> zope.component.provideUtility(
@@ -295,25 +292,23 @@ before the 'another.app-extension' evolver:
     >>> evolveMinimumSubscriber(event)
     foundation generation 1
     dependent generation 1
-
     >>> root['ordering']
     ['foundation 1', 'dependent 1']
 
 
-==============
- Installation
-==============
+Installation
+============
 
 In the the example above, we manually initialized the answers.  We
 shouldn't have to do that manually.  The application should be able to
 do that automatically.
 
-IInstallableSchemaManager extends ISchemaManager, providing an install
-method for performing an intial installation of an application.  This
+`~zope.generations.interfaces.IInstallableSchemaManager` extends
+`~zope.generations.interfaces.ISchemaManager`, providing an install
+method for performing an intial installation of an application. This
 is a better alternative than registering database-opened subscribers.
 
 Let's define a new schema manager that includes installation:
-
 
     >>> gsm.unregisterUtility(provided=ISchemaManager, name='some.app')
     True
@@ -343,7 +338,6 @@ Let's define a new schema manager that includes installation:
     ...         else:
     ...             raise ValueError("Bummer")
     ...         root['answers'] = answers # ping persistence
-
     >>> manager = MySchemaManager()
     >>> zope.component.provideUtility(manager, ISchemaManager, name='some.app')
 
@@ -351,20 +345,16 @@ Now, lets open a new database:
 
     >>> conn.close()
     >>> db.close()
-
     >>> db = DB()
     >>> tx = transaction.begin()
     >>> conn = db.open()
     >>> 'answers' in conn.root()
     False
     >>> tx.abort()
-
     >>> event = DatabaseOpenedEventStub(db)
     >>> evolveMinimumSubscriber(event)
-
     >>> tx = transaction.begin()
     >>> root = conn.root()
-
     >>> pprint(root['answers'])
     {'Hello': 'Hi &amp; how do you do?',
      'Meaning of life?': '42',

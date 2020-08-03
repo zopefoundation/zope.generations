@@ -40,12 +40,6 @@ setup(name='zope.generations',
       description='Zope application schema generations',
       long_description=(
           read('README.rst')
-          + '\n\n.. contents::\n\n' +
-          '======================\n'
-          'Detailed Documentation\n'
-          '======================\n'
-          + '\n\n' +
-          read('src', 'zope', 'generations', 'README.rst')
           + '\n\n' +
           read('CHANGES.rst')
       ),
@@ -75,6 +69,10 @@ setup(name='zope.generations',
       namespace_packages=['zope'],
       extras_require={
           'test': TESTS_REQUIRE,
+          'docs': [
+              'Sphinx',
+              'repoze.sphinx.autointerface',
+          ]
       },
       install_requires=[
           'setuptools',

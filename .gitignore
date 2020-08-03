@@ -13,3 +13,4 @@ develop-eggs
 htmlcov/
 parts
 src/*.egg-info
+docs/_build
