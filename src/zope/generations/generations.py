@@ -34,7 +34,7 @@ class SchemaManager(object):
        scripts provided as module methods.  You create a schema
        manager by providing mimumum and maximum generations and a
        package providing modules named ``evolveN``, where ``N`` is a
-       generation number.  Each module provides a function, `evolve`
+       generation number.  Each module provides a function, ``evolve``
        that evolves a database from the previous generation.
 
        For the sake of the example, we'll use the demo package defined
@@ -183,8 +183,21 @@ def PersistentDict():
     import persistent.mapping
     return persistent.mapping.PersistentMapping()
 
-
-EVOLVE, EVOLVENOT, EVOLVEMINIMUM = 'EVOLVE', 'EVOLVENOT', 'EVOLVEMINIMUM'
+#: Constant for the *how* argument to `evolve` indicating
+#: to evolve to the current generation.
+#:
+#: .. seealso:: `evolveSubscriber`
+EVOLVE = 'EVOLVE'
+#: Constant for the *how* argument to `evolve` indicating
+#: to perform no evolutions.
+#:
+#: .. seealso:: `evolveNotSubscriber`
+EVOLVENOT = 'EVOLVENOT'
+#: Constant for the *how* argument to `evolve` indicating
+#: to evolve to the minimum required generation.
+#:
+#: .. seealso:: `evolveMinimumSubscriber`
+EVOLVEMINIMUM = 'EVOLVEMINIMUM'
 
 
 def evolve(db, how=EVOLVE):
@@ -517,12 +530,31 @@ def evolve(db, how=EVOLVE):
 
 
 def evolveSubscriber(event):
+    """
+    A subscriber for :class:`zope.processlifetime.IDatabaseOpenedWithRoot` that evolves
+    all components to their current generation.
+
+    If you want to use this subscriber, you must register it.
+    """
     evolve(event.database, EVOLVE)
 
 
 def evolveNotSubscriber(event):
+    """
+    A subscriber for :class:`zope.processlifetime.IDatabaseOpenedWithRoot` that
+    does no evolution, merele verifying that all components are at the required
+    minimum version.
+
+    If you want to use this subscriber, you must register it.
+    """
     evolve(event.database, EVOLVENOT)
 
 
 def evolveMinimumSubscriber(event):
+    """
+    A subscriber for :class:`zope.processlifetime.IDatabaseOpenedWithRoot` that
+    evolves all components to their required minimum version.
+
+    This is registered in this package's ``subscriber.zcml`` file.
+    """
     evolve(event.database, EVOLVEMINIMUM)

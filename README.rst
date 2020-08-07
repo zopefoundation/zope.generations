@@ -10,6 +10,10 @@
    :target: https://pypi.org/project/zope.generations/
    :alt: Supported Python versions
 
+.. image:: https://readthedocs.org/projects/zopegenerations/badge/?version=latest
+   :target: https://zopegenerations.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 .. image:: https://travis-ci.org/zopefoundation/zope.generations.svg?branch=master
    :target: https://travis-ci.org/zopefoundation/zope.generations
    :alt: Build Status
@@ -22,3 +26,5 @@ Generations are a way of updating objects in the database when the application
 schema changes.  An application schema is essentially the structure of data,
 the structure of classes in the case of ZODB or the table descriptions in the
 case of a relational database.
+
+See https://zopegenerations.readthedocs.io/ for complete documentation.
