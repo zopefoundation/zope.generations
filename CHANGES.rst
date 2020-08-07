@@ -5,7 +5,9 @@
 5.0.1 (unreleased)
 ==================
 
-- Nothing changed yet.
+- Drop support for Python 3.4 and 3.5.
+
+- Add support for Python 3.8.
 
 
 5.0.0 (2019-09-23)
