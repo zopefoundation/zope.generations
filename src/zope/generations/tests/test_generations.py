@@ -72,6 +72,7 @@ class TestEvolve(cleanup.CleanUp,
         @interface.implementer(IInstallableSchemaManager)
         class Manager(object):
             generation = 0
+
             def install(self, context):
                 raise MyException
 
@@ -92,12 +93,12 @@ class TestEvolve(cleanup.CleanUp,
         from zope.generations.generations import evolve
         from zope.generations.generations import EVOLVEMINIMUM
 
-
         @interface.implementer(ISchemaManager)
         class Manager(object):
             generation = 1
             minimum_generation = None
             evolved = ()
+
             def evolve(self, context, generation):
                 self.evolved += (generation,)
 
@@ -122,6 +123,7 @@ class TestEvolve(cleanup.CleanUp,
         manager.generation = 3
         evolve(db, EVOLVEMINIMUM)
         self.assertEqual(manager.evolved, (2,))
+
 
 class TestEvolveExplicit(TestEvolve):
 
