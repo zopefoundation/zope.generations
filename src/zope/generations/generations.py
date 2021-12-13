@@ -183,6 +183,7 @@ def PersistentDict():
     import persistent.mapping
     return persistent.mapping.PersistentMapping()
 
+
 #: Constant for the *how* argument to `evolve` indicating
 #: to evolve to the current generation.
 #:
@@ -467,7 +468,7 @@ def evolve(db, how=EVOLVE):
                             logger.info("%s/%s: running install generation",
                                         db_name, key)
                             manager.install(context)
-                        except:
+                        except:  # noqa: E722 do not use bare 'except'
                             logger.exception("%s/%s: failed to run install",
                                              db_name, key)
                             raise
@@ -514,7 +515,7 @@ def evolve(db, how=EVOLVE):
                     manager.evolve(context, generation)
                     generations[key] = generation
                     tx.commit()
-                except:
+                except:  # noqa: E722 do not use bare 'except'
                     # An unguarded handler is intended here
                     tx.abort()
                     logger.exception(
@@ -531,8 +532,8 @@ def evolve(db, how=EVOLVE):
 
 def evolveSubscriber(event):
     """
-    A subscriber for :class:`zope.processlifetime.IDatabaseOpenedWithRoot` that evolves
-    all components to their current generation.
+    A subscriber for :class:`zope.processlifetime.IDatabaseOpenedWithRoot` that
+    evolves all components to their current generation.
 
     If you want to use this subscriber, you must register it.
     """

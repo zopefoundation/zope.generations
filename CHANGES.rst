@@ -2,12 +2,12 @@
  CHANGES
 =========
 
-5.0.1 (unreleased)
+5.1.0 (unreleased)
 ==================
 
-- Drop support for Python 3.4 and 3.5.
+- Drop support for Python 3.4.
 
-- Add support for Python 3.8.
+- Add support for Python 3.8, 3.9 and 3.10.
 
 
 5.0.0 (2019-09-23)
@@ -62,5 +62,5 @@
 
 - Generations key (stored in database root) has been changed from
   ``zope.app.generations`` to ``zope.generations``.  Migration is done when
-  ``evolve`` is run the first time by coping the exisiting generations data
+  ``evolve`` is run the first time by coping the existing generations data
   over to the new key. So the old and the new key can be used in parallel.

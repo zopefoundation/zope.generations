@@ -142,7 +142,7 @@ except ImportError:
     #: If ``zope.app.publication.zopepublication`` is available,
     #: this is imported from there.
     ROOT_NAME = 'Application'
-else: # pragma: no cover
+else:  # pragma: no cover
     #: The name of the root folder.
     #: If ``zope.app.publication.zopepublication`` is available,
     #: this is imported from there.
