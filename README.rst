@@ -14,8 +14,8 @@
    :target: https://zopegenerations.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://travis-ci.com/zopefoundation/zope.generations.svg?branch=master
-   :target: https://travis-ci.com/zopefoundation/zope.generations
+.. image:: https://github.com/zopefoundation/zope.generations/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/zopefoundation/zope.generations/actions/workflows/tests.yml
    :alt: Build Status
 
 .. image:: https://coveralls.io/repos/github/zopefoundation/zope.generations/badge.svg
