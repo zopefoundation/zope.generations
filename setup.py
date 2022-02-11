@@ -35,7 +35,7 @@ TESTS_REQUIRE = [
 ]
 
 setup(name='zope.generations',
-      version='5.1.0',
+      version='5.1.1.dev0',
       author='Zope Corporation and Contributors',
       author_email='zope-dev@zope.org',
       description='Zope application schema generations',
