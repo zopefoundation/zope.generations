@@ -2,7 +2,7 @@
  CHANGES
 =========
 
-5.1.0 (unreleased)
+5.1.0 (2022-02-11)
 ==================
 
 - Drop support for Python 3.4.
