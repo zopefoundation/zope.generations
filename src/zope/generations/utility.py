@@ -73,8 +73,7 @@ def findObjectsMatching(root, condition):
 
     if hasattr(root, 'values'):
         for subobj in root.values():
-            for match in findObjectsMatching(subobj, condition):
-                yield match
+            yield from findObjectsMatching(subobj, condition)
 
 
 def findObjectsProviding(root, interface):
@@ -128,8 +127,7 @@ def findObjectsProviding(root, interface):
     ['a1', 'a2', 'a3', 'c1', 'c2']
     """
 
-    for match in findObjectsMatching(root, interface.providedBy):
-        yield match
+    yield from findObjectsMatching(root, interface.providedBy)
 
 
 try:

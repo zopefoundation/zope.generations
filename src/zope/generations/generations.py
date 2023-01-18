@@ -31,7 +31,7 @@ generations_key = 'zope.generations'
 
 
 @zope.interface.implementer(IInstallableSchemaManager)
-class SchemaManager(object):
+class SchemaManager:
     """Schema manager
 
        Schema managers implement `IInstallableSchemaManager` using
@@ -173,7 +173,7 @@ class SchemaManager(object):
         return evolver.evolve.__doc__
 
 
-class Context(object):
+class Context:
     connection = None
 
 
@@ -297,7 +297,7 @@ def evolve(db, how=EVOLVE):
     And that the transaction record got a note
 
       >>> [it.description for it in conn.db().storage.iterator()][-1]
-      u'app1: evolving to generation 2'
+      b'app1: evolving to generation 2'
 
     If there is an error updating a particular generation, but the
     generation is greater than the minimum generation, then we won't

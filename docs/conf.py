@@ -63,7 +63,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # built documents.
 #
 # The short X.Y version.
-version = '%s.%s.%s' % tuple(map(int, rqmt.version.split('.')[:3]))
+version = '%s.%s' % tuple(map(int, rqmt.version.split('.')[:2]))
 # The full version, including alpha/beta/rc tags.
 release = rqmt.version
 

@@ -14,11 +14,9 @@
 """Schema-generation tests."""
 
 import doctest
-import re
 import unittest
 
 from zope.testing import cleanup
-from zope.testing import renormalizing
 
 
 class TestSchemaManager(unittest.TestCase):
@@ -70,7 +68,7 @@ class TestEvolve(cleanup.CleanUp,
             pass
 
         @interface.implementer(IInstallableSchemaManager)
-        class Manager(object):
+        class Manager:
             generation = 0
 
             def install(self, context):
@@ -94,7 +92,7 @@ class TestEvolve(cleanup.CleanUp,
         from zope.generations.interfaces import ISchemaManager
 
         @interface.implementer(ISchemaManager)
-        class Manager(object):
+        class Manager:
             generation = 1
             minimum_generation = None
             evolved = ()
@@ -128,7 +126,7 @@ class TestEvolve(cleanup.CleanUp,
 class TestEvolveExplicit(TestEvolve):
 
     def setUp(self):
-        super(TestEvolveExplicit, self).setUp()
+        super().setUp()
         import transaction
         self.txm = transaction.manager
         self.txm_explicit = self.txm.explicit
@@ -163,7 +161,7 @@ class TestSubscribers(unittest.TestCase):
         from zope.generations.generations import evolveSubscriber
         self.expected_kind = EVOLVE
 
-        class Event(object):
+        class Event:
             def __init__(self, db):
                 self.database = db
 
@@ -174,29 +172,11 @@ class TestSubscribers(unittest.TestCase):
         from zope.generations.generations import evolveNotSubscriber
         self.expected_kind = EVOLVENOT
 
-        class Event(object):
+        class Event:
             def __init__(self, db):
                 self.database = db
 
         evolveNotSubscriber(Event(self.db))
-
-
-checker = renormalizing.RENormalizing([
-    # Python 3 unicode removed the "u".
-    (re.compile("u('.*?')"),
-     r"\1"),
-    (re.compile('u(".*?")'),
-     r"\1"),
-    # Python 2 bytes has no "b".
-    (re.compile("b('.*?')"),
-     r"\1"),
-    (re.compile('b(".*?")'),
-     r"\1"),
-    (re.compile('ModuleNotFoundError:'), 'ImportError:'),
-    (re.compile(
-        "No module named '?zope.nonexistingmodule'?"),
-     'No module named nonexistingmodule'),
-])
 
 
 def test_suite():
@@ -237,11 +217,9 @@ def test_suite():
                 setUp=setUp,
                 tearDown=tearDown,
                 package='zope.generations',
-                checker=checker
             ),
             doctest.DocTestSuite(
                 'zope.generations.generations',
-                checker=checker,
                 optionflags=flags,
                 setUp=setUp,
                 tearDown=tearDown,

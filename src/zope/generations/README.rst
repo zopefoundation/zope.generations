@@ -18,10 +18,7 @@ http://wiki.zope.org/zope3/DatabaseGenerations
 We will be using the component architecture, and we will need a database and a
 connection:
 
-    >>> try:
-    ...     from html import escape
-    ... except ImportError:
-    ...     from cgi import escape
+    >>> from html import escape
     >>> from pprint import pprint
     >>> from zope.interface import implementer
     >>> import transaction
@@ -367,5 +364,5 @@ Now, lets open a new database:
 The ZODB transaction log notes that our install script was executed
 
     >>> [it.description for it in db.storage.iterator()][-1]
-    u'some.app: running install generation'
+    b'some.app: running install generation'
     >>> db.close()

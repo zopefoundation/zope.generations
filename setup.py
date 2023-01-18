@@ -71,6 +71,7 @@ setup(name='zope.generations',
       packages=find_packages('src'),
       package_dir={'': 'src'},
       namespace_packages=['zope'],
+      python_requires='>=3.7',
       extras_require={
           'test': TESTS_REQUIRE,
           'docs': [
