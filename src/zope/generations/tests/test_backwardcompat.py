@@ -18,10 +18,11 @@ import unittest
 class BackwardCompatibilityTests(unittest.TestCase):
 
     def setUp(self):
-        from zope.generations.generations import old_generations_key
-        from ZODB.MappingStorage import DB
         import persistent.mapping
         import transaction
+        from ZODB.MappingStorage import DB
+
+        from zope.generations.generations import old_generations_key
 
         self.db = DB(database_name='testdb')
         self.conn = self.db.open()
@@ -42,8 +43,9 @@ class BackwardCompatibilityTests(unittest.TestCase):
     def test_upgrade(self):
         # When evolve is called on a database which contains the old
         # generations key, it gets copied over to the new one:
-        from zope.generations.generations import (
-            evolve, generations_key, old_generations_key)
+        from zope.generations.generations import evolve
+        from zope.generations.generations import generations_key
+        from zope.generations.generations import old_generations_key
 
         evolve(self.db)
         self.assertEqual(self.root[old_generations_key],

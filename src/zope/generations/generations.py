@@ -13,12 +13,16 @@
 ##############################################################################
 """Support for application database generations."""
 import logging
+
 import transaction
 import zope.component
 import zope.interface
 
-from .interfaces import GenerationTooHigh, GenerationTooLow, UnableToEvolve
-from .interfaces import ISchemaManager, IInstallableSchemaManager
+from .interfaces import GenerationTooHigh
+from .interfaces import GenerationTooLow
+from .interfaces import IInstallableSchemaManager
+from .interfaces import ISchemaManager
+from .interfaces import UnableToEvolve
 
 
 logger = logging.getLogger('zope.generations')

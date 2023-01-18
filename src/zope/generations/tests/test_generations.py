@@ -59,12 +59,12 @@ class TestEvolve(cleanup.CleanUp,
                  unittest.TestCase):
 
     def test_error_on_install_propagates(self):
-        from zope import interface
-        from zope import component
         from ZODB.MappingStorage import DB
 
-        from zope.generations.interfaces import IInstallableSchemaManager
+        from zope import component
+        from zope import interface
         from zope.generations.generations import evolve
+        from zope.generations.interfaces import IInstallableSchemaManager
 
         class MyException(Exception):
             pass
@@ -85,13 +85,13 @@ class TestEvolve(cleanup.CleanUp,
             evolve(db)
 
     def test_evolve_min_twice(self):
-        from zope import interface
-        from zope import component
         from ZODB.MappingStorage import DB
 
-        from zope.generations.interfaces import ISchemaManager
-        from zope.generations.generations import evolve
+        from zope import component
+        from zope import interface
         from zope.generations.generations import EVOLVEMINIMUM
+        from zope.generations.generations import evolve
+        from zope.generations.interfaces import ISchemaManager
 
         @interface.implementer(ISchemaManager)
         class Manager(object):
@@ -142,6 +142,7 @@ class TestSubscribers(unittest.TestCase):
 
     def setUp(self):
         from ZODB.MappingStorage import DB
+
         from zope.generations import generations
         self.evolve = generations.evolve
         generations.evolve = self.mock_evolve
