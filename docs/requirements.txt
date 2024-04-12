@@ -1,3 +1,2 @@
-# Install this from the parent directory:
-# pip install -r docs/requirements.txt
-.[docs]
+Sphinx
+repoze.sphinx.autointerface
