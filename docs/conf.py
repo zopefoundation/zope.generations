@@ -88,15 +88,16 @@ default_role = 'obj'
 html_static_path = ['_static']
 
 intersphinx_mapping = {
-    'https://docs.python.org/': None,
-    'https://zodb-docs.readthedocs.io/en/latest/': None,
-    'https://persistent.readthedocs.io/en/latest/': None,
-
-    'https://zopecomponent.readthedocs.io/en/latest/': None,
-    'https://zopeconfiguration.readthedocs.io/en/latest/': None,
-    'https://zopeevent.readthedocs.io/en/latest/': None,
-    'https://zopeinterface.readthedocs.io/en/latest/': None,
-    'https://zopeprocesslifetime.readthedocs.io/en/latest/': None,
+    'python': ('https://docs.python.org/', None),
+    'zodb': ('https://zodb-docs.readthedocs.io/en/latest/', None),
+    'persistent': ('https://persistent.readthedocs.io/en/latest/', None),
+    'zopecomponent': ('https://zopecomponent.readthedocs.io/en/latest/', None),
+    'zopeconfiguration': (
+        'https://zopeconfiguration.readthedocs.io/en/latest/', None),
+    'zopeevent': ('https://zopeevent.readthedocs.io/en/latest/', None),
+    'zopeinterface': ('https://zopeinterface.readthedocs.io/en/latest/', None),
+    'zopeprocesslifetime': (
+        'https://zopeprocesslifetime.readthedocs.io/en/latest/', None),
 }
 
 
