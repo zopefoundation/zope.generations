@@ -6,6 +6,7 @@
 
 # -- Path setup --------------------------------------------------------------
 
+import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -14,8 +15,10 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 import sys
-import os
+
 import pkg_resources
+
+
 sys.path.append(os.path.abspath('../src'))
 sys.path.insert(0, os.path.abspath('.'))
 rqmt = pkg_resources.require('zope.generations')[0]
