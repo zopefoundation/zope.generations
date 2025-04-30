@@ -132,7 +132,7 @@ def findObjectsProviding(root, interface):
 
 try:
     import zope.app.publication.zopepublication
-except ImportError:
+except ModuleNotFoundError:
     # 'Application' is what ZopePublication uses, up through at least
     # 4.3.1
 

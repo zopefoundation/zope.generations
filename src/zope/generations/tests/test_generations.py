@@ -21,9 +21,6 @@ from zope.testing import cleanup
 
 class TestSchemaManager(unittest.TestCase):
 
-    assertRaisesRegex = getattr(unittest.TestCase, 'assertRaisesRegex',
-                                unittest.TestCase.assertRaisesRegexp)
-
     def _getTargetClass(self):
         from zope.generations.generations import SchemaManager
         return SchemaManager
