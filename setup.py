@@ -20,7 +20,6 @@
 """
 import os
 
-from setuptools import find_packages
 from setuptools import setup
 
 
@@ -33,11 +32,11 @@ TESTS_REQUIRE = [
     'ZODB',
     'zope.site',
     'zope.testing',
-    'zope.testrunner',
+    'zope.testrunner >= 6.4',
 ]
 
 setup(name='zope.generations',
-      version='6.1.dev0',
+      version='7.0.dev0',
       author='Zope Foundation and Contributors',
       author_email='zope-dev@zope.dev',
       description='Zope application schema generations',
@@ -68,9 +67,6 @@ setup(name='zope.generations',
       ],
       url='https://github.com/zopefoundation/zope.generations',
       license='ZPL-2.1',
-      packages=find_packages('src'),
-      package_dir={'': 'src'},
-      namespace_packages=['zope'],
       python_requires='>=3.9',
       extras_require={
           'test': TESTS_REQUIRE,
