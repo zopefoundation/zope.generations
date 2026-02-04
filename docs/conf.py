@@ -7,27 +7,20 @@
 # -- Path setup --------------------------------------------------------------
 
 import os
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
 import sys
-
-import pkg_resources
+from datetime import datetime
+from importlib.metadata import version as get_version
 
 
 sys.path.append(os.path.abspath('../src'))
 sys.path.insert(0, os.path.abspath('.'))
-rqmt = pkg_resources.require('zope.generations')[0]
+_version = get_version('zope.generations')
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'zope.generations'
-copyright = '2020, Zope Community'
+copyright = f'2020-{datetime.now().year}, Zope Community'
 author = 'Zope Community'
 
 
@@ -66,9 +59,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # built documents.
 #
 # The short X.Y version.
-version = '%s.%s' % tuple(map(int, rqmt.version.split('.')[:2]))
+version = '%s.%s' % tuple(map(int, _version.split('.')[:2]))
 # The full version, including alpha/beta/rc tags.
-release = rqmt.version
+release = _version
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
