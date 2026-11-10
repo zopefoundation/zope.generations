@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "zope.generations"
-version = "7.1"
+version = "7.2.dev0"
 description = "Zope application schema generations"
 license = "ZPL-2.1"
 classifiers = [
